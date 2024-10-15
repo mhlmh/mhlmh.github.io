@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档页面</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/styles/github.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,27 +20,33 @@
             background-color: inherit;
             border-bottom: 1px solid #ddd;
             position: relative;
+            z-index: 100;
+        }
+        .menu-icon {
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 20px;
         }
         .logo {
+            font-size: 25px;
+            font-weight: bold;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 25px;
-            font-weight: bold;
         }
         .container {
             display: flex;
-            height: calc(100vh - 50px); /* 减去页眉高度 */
+            height: calc(100vh - 50px);
         }
         .sidebar {
             width: 250px;
             padding: 20px;
             transition: background-color 0.5s;
-            display: none; /* 默认隐藏 */
+            display: none;
             overflow-y: auto;
         }
         .sidebar.visible {
-            display: block; /* 点击图标后显示 */
+            display: block;
         }
         .content {
             flex-grow: 1;
@@ -55,7 +61,7 @@
             background: #f9f9f9;
         }
         h1, h2, h3, h4 {
-            color: inherit;
+            transition: color 0.5s;
         }
         /* 日间模式 */
         .day-mode {
@@ -66,72 +72,118 @@
             background-color: #fff;
             color: #000;
         }
+        .day-mode .card {
+            color: #333;
+        }
+        .day-mode .card h1,
+        .day-mode .card h2,
+        .day-mode .card h3,
+        .day-mode .card h4 {
+            color: #000;
+        }
         .day-mode a {
-            color: #1a0dab;
+            color: #000;
             text-decoration: none;
         }
         .day-mode a:hover {
             color: #ff0000;
-            text-decoration: none;
         }
-        /* 夜间模式 */
-        .night-mode {
-            background-color: #333;
-            color: #fff;
-        }
-        .night-mode .sidebar {
-            background-color: #444;
-            color: #fff;
-        }
-        .night-mode .sidebar h2,
-        .night-mode .sidebar a {
-            color: #000; /* 夜间模式下目录卡片文字为黑色 */
-        }
-        .night-mode a {
-            color: #1e90ff;
-            text-decoration: none;
-        }
-        .night-mode a:hover {
-            color: #ff4500;
-            text-decoration: none;
-        }
+      /* 夜间模式 */
+.night-mode {
+    background-color: #000; /* 页面整体背景色为黑色 */
+    color: rgba(255, 255, 255, 0.5); /* 所有文字颜色为50%灰色 */
+}
+
+.night-mode .sidebar {
+    background-color: #000; /* 目录背景色与页面背景一致 */
+    color: rgba(255, 255, 255, 0.5); /* 目录文字颜色为50%灰色 */
+}
+
+.night-mode .card {
+    background-color: #000; /* 卡片背景色与页面背景一致 */
+    color: rgba(255, 255, 255, 0.5); /* 卡片内文字颜色为50%灰色 */
+    border-color: #333; /* 卡片的边框与背景稍有区别 */
+}
+
+.night-mode .card h1,
+.night-mode h1,
+.night-mode .card h2,
+.night-mode .card h3,
+.night-mode .card h4 {
+    color: rgba(255, 255, 255, 0.5); /* 所有标题颜色为50%灰色，包括h1 */
+}
+
+.night-mode a {
+    color: rgba(255, 255, 255, 0.5); /* 链接文字颜色为50%灰色 */
+    text-decoration: none;
+}
+
+.night-mode a:hover {
+    color: rgba(255, 255, 255, 0.7); /* 链接悬停时颜色稍微变亮 */
+}
+
+.night-mode a:active {
+    color: #000; /* 点击链接后变为黑色 */
+}
+
+/* 通用链接缩进和悬停效果 */
+a {
+    display: block;
+    padding-left: 10px;
+}
+
+a:hover {
+    background-color: #444; /* 悬停时链接背景颜色稍微变亮 */
+}
         .search-container {
             display: flex;
             align-items: center;
-            margin-left: auto; /* 右对齐 */
+            margin-left: auto;
         }
         .search-input {
             flex-grow: 1;
             display: block;
             margin-right: 10px;
-            display: none; /* 默认隐藏 */
+            display: none;
         }
-        .menu-icon, .search-icon, .mode-icon {
+        .search-icon, .mode-icon {
             cursor: pointer;
             margin-left: 10px;
             font-size: 20px;
+        }
+        /* 链接缩进 */
+        a {
+            display: block;
+            padding-left: 10px;
+        }
+        /* 链接悬停效果 */
+        a:hover {
+            background-color: #eee;
         }
         /* 移动设备 */
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
                 left: 0;
-                top: 50px; /* 页眉高度 */
+                top: 50px;
                 height: calc(100vh - 50px);
                 z-index: 100;
                 background: white;
                 border-right: 1px solid #ddd;
-                display: none; /* 默认隐藏 */
+                display: none;
             }
             .sidebar.visible {
-                display: block; /* 点击图标后显示 */
+                display: block;
             }
             .search-input {
-                display: none; /* 默认隐藏 */
+                display: none;
                 flex-grow: 1;
             }
             .search-input.active {
-                display: block; /* 点击图标后显示搜索框 */
+                display: block;
+            }
+            .search-icon {
+                font-size: 30px;
             }
         }
     </style>
@@ -139,93 +191,128 @@
 <body class="day-mode">
 
     <header>
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <div class="logo">MHLMH</div>
         <div class="search-container">
             <input type="text" id="searchInput" class="search-input" placeholder="搜索文档内容..." oninput="searchContent()">
-            <span class="search-icon" onclick="toggleSearchInput()">🔍</span> <!-- 搜索图标 -->
-        </div>
-        <div class="logo">MHLMH</div>
-        <div class="header-icons">
-            <span class="mode-icon" onclick="toggleTheme()">🌙</span> <!-- 模式切换图标 -->
-            <span class="menu-icon" onclick="toggleMenu()">☰</span> <!-- 目录图标 -->
+            <span class="search-icon" onclick="toggleSearchInput()">🔍</span>
+            <span class="mode-icon" onclick="toggleTheme()">🌙</span>
         </div>
     </header>
 
     <div class="container">
         <div class="sidebar" id="sidebar">
-            <h2>目录</h2>
-            <div>
-                <div class="card">
-                    <h3 onclick="toggleContent('section1')">第一部分</h3>
-                    <div id="section1-content" style="display: none;">
-                        <a href="#item1" onclick="showDocumentContent()">第一项</a><br>
-                        <a href="#item2" onclick="showDocumentContent()">第二项</a>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3 onclick="toggleContent('section2')">第二部分</h3>
-                    <div id="section2-content" style="display: none;">
-                        <a href="#item3" onclick="showDocumentContent()">第三项</a><br>
-                        <a href="#item4" onclick="showDocumentContent()">第四项</a>
-                    </div>
+            <div class="card">
+                <h2>目录</h2>
+                <div id="section1-content">
+                    <a href="#item1" onclick="showDocumentContent('item1')">第一项</a>
+                    <a href="#item2" onclick="showDocumentContent('item2')">第二项</a>
+                    <a href="#item3" onclick="showDocumentContent('item3')">第三项</a>
+                    <a href="#item4" onclick="showDocumentContent('item4')">第四项</a>
                 </div>
             </div>
         </div>
         <div class="content markdown-body">
             <div id="homepageContent">
-                <h1>主页</h1>
                 <div class="card">
-                    <h2>欢迎来到文档首页</h2>
-                    <p>这里是主页的内容，您可以在左侧的目录中找到其他部分的内容。</p>
-                </div>
+                <h1 style="text-align: center;">MHLMH 服务器</h1>
+                    <h3>节点：中国香港 [HK, CN]</h3>
+<p>
+●  测试速度：<b href="storage/tool/test/100mb.bin">点此下载</b> 100MB 测试文件
+
+       <p>●  浏览资源：<b href="storage">点此查阅</b> 本站资源存储目录<br>
+        （某些目录可能加密，请先获取访问权限）
+
+       <p>●  激活软件：<br>
+           ○  激活 IDM 下载工具，请复制以下命令：</p><code>iwr -useb https://lvmh.eu.org/storage/tool/IAS/IAS.ps1 | iex</code></p>粘贴到 Powershell 中（个人激活试用限制期限，原帖可参阅 Github 项目，请支持正版软件）；
+<br>
+           ○  激活 Windows 系统，请 <b href="storage/tool/heu/HEU_KMS_Activator.zip">点此下载</b> HEU KMS Activator（仅供个人研究激活原理试用）
+
+<p>
+       ●   DD 重装：请 <b href="https://mhlmh.eu.org/?DD#README.md">点此跳转</b> 详阅安装前须知
+<h3>更多服务器工具和功能正在测试中，后续视测试情况陆续上线，敬请关注。</h3>
+</div>
             </div>
-            <!-- 文档内容的卡片放在这里，默认不显示 -->
             <div id="documentContent" style="display: none;">
                 <h1>文档内容</h1>
-                <div class="card" id="item1">
+                <div class="card" id="item1" style="display: none;">
                     <h2>第一项</h2>
-                    <p>这是第一项的内容。</p>
-                    <pre><code class="language-python">print("Hello, World!")</code></pre>
+                    <div class="markdown" id="markdown-item1">
+                        <script type="text/markdown">
+                            # 标题 1
+                            这是第一项的内容。
+                            
+                            ```python
+                            print("Hello, World!")
+                            ```
+                        </script>
+                    </div>
                 </div>
-                <div class="card" id="item2">
+                <div class="card" id="item2" style="display: none;">
                     <h2>第二项</h2>
-                    <p>这是第二项的内容。</p>
-                    <pre><code class="language-javascript">console.log("Hello, World!");</code></pre>
+                    <div class="markdown" id="markdown-item2">
+                        <script type="text/markdown">
+                            # 标题 2
+                            这是第二项的内容。
+                            
+                            ```javascript
+                            console.log("Hello, World!");
+                            ```
+                        </script>
+                    </div>
                 </div>
-                <div class="card" id="item3">
+                <div class="card" id="item3" style="display: none;">
                     <h2>第三项</h2>
-                    <p>这是第三项的内容。</p>
-                    <pre><code class="language-html">&lt;h1&gt;Hello, World!&lt;/h1&gt;</code></pre>
+                    <div class="markdown" id="markdown-item3">
+                        <script type="text/markdown">
+                            # 标题 3
+                            这是第三项的内容。
+                            
+                            ```html
+                            <h1>Hello, World!</h1>
+                            ```
+                        </script>
+                    </div>
                 </div>
-                <div class="card" id="item4">
+                <div class="card" id="item4" style="display: none;">
                     <h2>第四项</h2>
-                    <p>这是第四项的内容。</p>
-                    <pre><code class="language-css">body { color: red; }</code></pre>
+                    <div class="markdown" id="markdown-item4">
+                        <script type="text/markdown">
+                            # 标题 4
+                            这是第四项的内容。
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.2.8/marked.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightBlock(block);
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染所有的 Markdown
+            document.querySelectorAll('.markdown').forEach(function(element) {
+                const markdownContent = element.querySelector('script[type="text/markdown"]').textContent;
+                element.innerHTML = marked(markdownContent);
+                const blocks = element.querySelectorAll('pre code');
+                blocks.forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
             });
         });
 
-        function toggleContent(id) {
-            const content = document.getElementById(id + '-content');
-            content.style.display = (content.style.display === 'none') ? 'block' : 'none';
-        }
+        // 切换文档内容
+        function showDocumentContent(itemId) {
+            const selectedItem = document.getElementById(itemId);
+            document.querySelectorAll('#documentContent .card').forEach(card => {
+                card.style.display = 'none'; // 隐藏所有内容
+            });
+            selectedItem.style.display = 'block'; // 显示选定的内容
 
-        function showDocumentContent() {
             // 隐藏主页内容
-            const homepageContent = document.getElementById('homepageContent');
-            homepageContent.style.display = 'none';
-
-            // 显示文档内容
-            const documentContent = document.getElementById('documentContent');
-            documentContent.style.display = 'block';
+            document.getElementById('homepageContent').style.display = 'none';
+            document.getElementById('documentContent').style.display = 'block'; // 显示文档内容
         }
 
         function toggleMenu() {
@@ -237,7 +324,7 @@
             const query = document.getElementById('searchInput').value.toLowerCase();
             const items = document.querySelectorAll('#documentContent .card');
             items.forEach(item => {
-                const text = item.innerText.toLowerCase();
+                const text = item.textContent.toLowerCase();
                 item.style.display = text.includes(query) ? 'block' : 'none';
             });
         }
@@ -245,6 +332,7 @@
         function toggleSearchInput() {
             const searchInput = document.getElementById('searchInput');
             searchInput.classList.toggle('active');
+            searchInput.focus();
         }
 
         function toggleTheme() {
