@@ -4,17 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档页面</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/netlify-cms@^2.9.0/dist/netlify-cms.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: white; /* Day mode background */
+            color: #333; /* Day mode text color */
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white; /* Day mode header background */
+            color: black; /* Day mode text color */
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .logo {
+            font-size: 24px;
+        }
+
+        .header .category {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .header .mode-toggle,
+        .header .search-icon {
+            cursor: pointer;
+            margin-left: 10px; /* Ensure icons are spaced */
+        }
+
+        .header #search {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
         }
 
         .container {
@@ -22,19 +52,22 @@
         }
 
         .sidebar {
-            background-color: #333;
-            color: white;
+            background-color: white; /* Day mode sidebar color */
+            color: black; /* Day mode text color */
             padding: 15px;
             width: 200px;
             transition: width 0.3s;
+            height: calc(100vh - 50px); /* Full height minus header height */
+            overflow-y: auto; /* Enable scrolling */
         }
 
         .sidebar .toggle-btn {
             background: none;
             border: none;
-            color: white;
+            color: black; /* Day mode text color */
             font-size: 24px;
             cursor: pointer;
+            margin-bottom: 15px;
         }
 
         .directory {
@@ -43,22 +76,25 @@
 
         .directory h2 {
             margin-bottom: 10px;
+            color: #333; /* Dark color for the heading */
         }
 
         .directory ul {
             list-style: none;
+            padding-left: 0;
         }
 
         .directory li a {
-            color: white;
+            color: black; /* Day mode text color */
             text-decoration: none;
-            padding: 8px;
+            padding: 10px;
             display: block;
             transition: background 0.3s;
+            border-radius: 5px;
         }
 
         .directory li a:hover {
-            background-color: #444;
+            background-color: #f0f0f0; /* Light gray on hover */
         }
 
         .content {
@@ -66,40 +102,50 @@
             padding: 15px;
         }
 
-        #search {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
         .markdown {
-            background-color: white;
+            background-color: #ffffff; /* Light background color */
             padding: 15px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        h1, h2 {
-            color: #2c3e50;
+        .welcome-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333; /* Dark color */
         }
 
-        pre {
-            background: #f8f8f8;
-            padding: 10px;
-            border-radius: 5px;
-            overflow: auto;
+        /* Night mode styles */
+        body.night-mode {
+            background-color: #121212; /* Dark background for night mode */
+            color: white; /* Night mode text color */
         }
 
-        .language-python {
-            color: #0070c9;
+        body.night-mode .header {
+            background-color: #1e1e1e; /* Night mode header background */
+            color: white; /* Night mode text color */
         }
 
-        .language-javascript {
-            color: #f1e05a;
+        body.night-mode .sidebar {
+            background-color: #1e1e1e; /* Night mode sidebar background */
+            color: white; /* Night mode text color */
         }
 
-        .language-html {
-            color: #e34c26;
+        body.night-mode .directory h2 {
+            color: white; /* Night mode heading color */
+        }
+
+        body.night-mode .directory li a {
+            color: white; /* Night mode link color */
+        }
+
+        body.night-mode .directory li a:hover {
+            background-color: #4a5568; /* Darker on hover */
+        }
+
+        body.night-mode .markdown {
+            background-color: #1e1e1e; /* Dark background for markdown */
         }
 
         /* Responsive styles */
@@ -113,39 +159,67 @@
             .directory {
                 display: none;
             }
+            .sidebar .icon {
+                display: block;
+                width: 50px;
+                height: 50px;
+                background-color: #2d3748;
+                color: white;
+                text-align: center;
+                line-height: 50px; /* Center icon vertically */
+                font-size: 24px;
+                border-radius: 5px;
+            }
+            .content {
+                padding-left: 15px; /* Avoid content being too close to the sidebar */
+            }
+            /* Search icon */
+            .search-icon {
+                display: block;
+                cursor: pointer;
+                color: black; /* Day mode icon color */
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="logo">MHLMH</div>
+        <div class="category">文档分类</div>
+        <div>
+            <span class="mode-toggle" onclick="toggleMode()">🌙</span>
+            <span class="search-icon" onclick="toggleSearch()">🔍</span>
+            <input type="text" id="search" placeholder="搜索内容..." onkeyup="filterContent()" style="display: none;">
+        </div>
+    </div>
     <div class="container">
         <div class="sidebar" id="sidebar">
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="directory" id="directory">
                 <h2>目录</h2>
                 <ul>
-                    <li><a href="#section1">第一部分</a></li>
-                    <li><a href="#section2">第二部分</a></li>
-                    <li><a href="#section3">第三部分</a></li>
+                    <li><a href="#section1" onclick="showSection(event, 'section1')">第一部分</a></li>
+                    <li><a href="#section2" onclick="showSection(event, 'section2')">第二部分</a></li>
+                    <li><a href="#section3" onclick="showSection(event, 'section3')">第三部分</a></li>
                 </ul>
             </div>
         </div>
         <div class="content">
-            <input type="text" id="search" placeholder="搜索内容..." onkeyup="filterContent()">
+            <div class="welcome-message">MHLMH 文档</div>
             <div class="markdown" id="markdown-content">
-                <h1>文档标题</h1>
-                <div id="section1">
+                <div id="section1" class="section" style="display: none;">
                     <h2>第一部分</h2>
-                    <p>这是第一部分的内容。</p>
+                    <p>这是第一部分的内容。以下是Python代码示例：</p>
                     <pre><code class="language-python">print("Hello, World!")</code></pre>
                 </div>
-                <div id="section2">
+                <div id="section2" class="section" style="display: none;">
                     <h2>第二部分</h2>
-                    <p>这是第二部分的内容。</p>
+                    <p>这是第二部分的内容。以下是JavaScript代码示例：</p>
                     <pre><code class="language-javascript">console.log("Hello, World!");</code></pre>
                 </div>
-                <div id="section3">
+                <div id="section3" class="section" style="display: none;">
                     <h2>第三部分</h2>
-                    <p>这是第三部分的内容。</p>
+                    <p>这是第三部分的内容。以下是HTML代码示例：</p>
                     <pre><code class="language-html">&lt;p&gt;Hello, World!&lt;/p&gt;</code></pre>
                 </div>
             </div>
@@ -165,9 +239,18 @@
             }
         }
 
+        function showSection(event, sectionId) {
+            event.preventDefault(); // Prevent default anchor behavior
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none'; // Hide all sections
+            });
+            document.getElementById(sectionId).style.display = 'block'; // Show selected section
+        }
+
         function filterContent() {
             const searchTerm = document.getElementById('search').value.toLowerCase();
-            const sections = document.querySelectorAll('.markdown > div');
+            const sections = document.querySelectorAll('.markdown > .section');
 
             sections.forEach(section => {
                 const text = section.textContent.toLowerCase();
@@ -177,6 +260,29 @@
                     section.style.display = 'none';
                 }
             });
+        }
+
+        function toggleSearch() {
+            const searchInput = document.getElementById('search');
+            if (searchInput.style.display === 'none' || searchInput.style.display === '') {
+                searchInput.style.display = 'block';
+                searchInput.focus();
+            } else {
+                searchInput.style.display = 'none';
+            }
+        }
+
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+
+            body.classList.toggle('night-mode');
+
+            if (body.classList.contains('night-mode')) {
+                modeToggle.textContent = '🌞'; // Change to day mode icon
+            } else {
+                modeToggle.textContent = '🌙'; // Change to night mode icon
+            }
         }
     </script>
 </body>
