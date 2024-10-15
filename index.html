@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档页面</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css/github-markdown.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            position: relative;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 800px;
+            display: none; /* 默认隐藏 */
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.2s;
+        }
+        .directory {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 220px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .directory h3 {
+            cursor: pointer;
+            margin: 0;
+        }
+        .directory-content {
+            display: none;
+            padding-left: 15px;
+        }
+        .directory-content a {
+            color: white; /* 确保链接文字颜色为白色 */
+            text-decoration: none;
+            padding: 5px 0;
+            display: block; /* 使链接占据整行 */
+            transition: color 0.2s;
+        }
+        .directory-content a:hover {
+            color: #FFD700; /* 悬停时变成金色 */
+        }
+        .search {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .search input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 300px;
+            transition: border 0.2s;
+        }
+        .search input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        /* 移动设备样式 */
+        @media (max-width: 768px) {
+            .directory {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1000;
+                width: auto; /* 自适应宽度 */
+            }
+            .directory-content {
+                background: rgba(255, 255, 255, 0.9);
+                border-radius: 5px;
+                padding: 10px;
+                position: absolute;
+                top: 30px;
+                left: 0;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .directory h3:hover + .directory-content {
+                display: block; /* 悬停时显示内容 */
+            }
+        }
+        /* 回顶部按钮样式 */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: none; /* 默认隐藏 */
+            z-index: 1000;
+            transition: background-color 0.2s;
+        }
+        .back-to-top:hover {
+            background-color: #0056b3; /* 悬停时变色 */
+        }
+    </style>
+</head>
+<body>
 
+    <h1>文档页面</h1>
+
+    <div class="directory">
+        <h3 onclick="toggleDirectory()">目录</h3>
+        <div class="directory-content">
+            <a href="#section1" onclick="showContent('section1')">第一部分</a>
+            <a href="#section2" onclick="showContent('section2')">第二部分</a>
+            <a href="#section3" onclick="showContent('section3')">第三部分</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="搜索内容..." onkeyup="searchContent()">
+        </div>
+
+        <div id="welcomeMessage" class="card">
+            <h2>这里是文档页面</h2>
+            <p>点击左侧目录中的章节以查看内容。</p>
+        </div>
+
+        <div class="card" id="section1">
+            <h2>第一部分</h2>
+            <p>这是第一部分的内容。这里提供了一些示例内容，以帮助用户理解主题。</p>
+            <p>示例内容1：在这里插入一些相关的信息，描述该部分的主要点。</p>
+            <h3>小节 1.1</h3>
+            <p>这是小节 1.1 的内容，详细讲解第一部分的某个特定主题。</p>
+            <h3>小节 1.2</h3>
+            <p>这是小节 1.2 的内容，提供相关示例和详细说明。</p>
+            <div class="navigation">
+                <a href="#section2" onclick="showContent('section2')">下节: 第二部分</a>
+            </div>
+        </div>
+
+        <div class="card" id="section2">
+            <h2>第二部分</h2>
+            <p>这是第二部分的内容。这里提供了一些示例内容，以帮助用户理解主题。</p>
+            <p>示例内容1：在这里插入一些相关的信息，描述该部分的主要点。</p>
+            <h3>小节 2.1</h3>
+            <p>这是小节 2.1 的内容，详细讲解第二部分的某个特定主题。</p>
+            <h3>小节 2.2</h3>
+            <p>这是小节 2.2 的内容，提供相关示例和详细说明。</p>
+            <div class="navigation">
+                <a href="#section1" onclick="showContent('section1')">上节: 第一部分</a> | 
+                <a href="#section3" onclick="showContent('section3')">下节: 第三部分</a>
+            </div>
+        </div>
+
+        <div class="card" id="section3">
+            <h2>第三部分</h2>
+            <p>这是第三部分的内容。这里提供了一些示例内容，以帮助用户理解主题。</p>
+            <p>示例内容1：在这里插入一些相关的信息，描述该部分的主要点。</p>
+            <h3>小节 3.1</h3>
+            <p>这是小节 3.1 的内容，详细讲解第三部分的某个特定主题。</p>
+            <h3>小节 3.2</h3>
+            <p>这是小节 3.2 的内容，提供相关示例和详细说明。</p>
+            <div class="navigation">
+                <a href="#section2" onclick="showContent('section2')">上节: 第二部分</a>
+            </div>
+        </div>
+    </div>
+
+    <button class="back-to-top" onclick="scrollToTop()">回到顶部</button>
+
+    <script>
+        // 初始化显示欢迎消息
+        document.getElementById('welcomeMessage').style.display = 'block';
+
+        function toggleDirectory() {
+            const content = document.querySelector('.directory-content');
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showContent(sectionId) {
+            // 隐藏所有章节
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.style.display = 'none';
+            });
+
+            // 显示点击的章节内容
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.style.display = 'block';
+            }
+
+            // 隐藏欢迎消息
+            document.getElementById('welcomeMessage').style.display = 'none';
+        }
+
+        function searchContent() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(input) ? 'block' : 'none';
+            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        window.onscroll = function() {
+            const button = document.querySelector('.back-to-top');
+            if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+                button.style.display = "block";
+            } else {
+                button.style.display = "none";
+            }
+        };
+    </script>
+
+</body>
+</html>
