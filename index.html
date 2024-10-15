@@ -4,284 +4,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档页面</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/netlify-cms@^2.9.0/dist/netlify-cms.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/github.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: white; /* Day mode background */
-            color: #333; /* Day mode text color */
+            transition: background-color 0.5s, color 0.5s;
             margin: 0;
-            transition: background-color 0.3s, color 0.3s;
         }
-
-        .header {
+        header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background-color: white; /* Day mode header background */
-            color: black; /* Day mode text color */
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            padding: 10px 20px;
+            background-color: inherit;
+            border-bottom: 1px solid #ddd;
+            position: relative;
         }
-
-        .header .logo {
-            font-size: 24px;
+        .logo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 25px;
+            font-weight: bold;
         }
-
-        .header .category {
-            flex: 1;
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .header .mode-toggle,
-        .header .search-icon {
-            cursor: pointer;
-            margin-left: 10px; /* Ensure icons are spaced */
-        }
-
-        .header #search {
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid #e2e8f0;
-        }
-
         .container {
             display: flex;
+            height: calc(100vh - 50px); /* 减去页眉高度 */
         }
-
         .sidebar {
-            background-color: white; /* Day mode sidebar color */
-            color: black; /* Day mode text color */
-            padding: 15px;
-            width: 200px;
-            transition: width 0.3s;
-            height: calc(100vh - 50px); /* Full height minus header height */
-            overflow-y: auto; /* Enable scrolling */
+            width: 250px;
+            padding: 20px;
+            transition: background-color 0.5s;
+            display: none; /* 默认隐藏 */
+            overflow-y: auto;
         }
-
-        .sidebar .toggle-btn {
-            background: none;
-            border: none;
-            color: black; /* Day mode text color */
-            font-size: 24px;
-            cursor: pointer;
-            margin-bottom: 15px;
+        .sidebar.visible {
+            display: block; /* 点击图标后显示 */
         }
-
-        .directory {
-            display: block;
-        }
-
-        .directory h2 {
-            margin-bottom: 10px;
-            color: #333; /* Dark color for the heading */
-        }
-
-        .directory ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .directory li a {
-            color: black; /* Day mode text color */
-            text-decoration: none;
-            padding: 10px;
-            display: block;
-            transition: background 0.3s;
-            border-radius: 5px;
-        }
-
-        .directory li a:hover {
-            background-color: #f0f0f0; /* Light gray on hover */
-        }
-
         .content {
-            flex: 1;
-            padding: 15px;
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
         }
-
-        .markdown {
-            background-color: #ffffff; /* Light background color */
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .welcome-message {
-            font-size: 24px;
             margin-bottom: 20px;
-            color: #333; /* Dark color */
+            background: #f9f9f9;
         }
-
-        /* Night mode styles */
-        body.night-mode {
-            background-color: #121212; /* Dark background for night mode */
-            color: white; /* Night mode text color */
+        h1, h2, h3, h4 {
+            color: inherit;
         }
-
-        body.night-mode .header {
-            background-color: #1e1e1e; /* Night mode header background */
-            color: white; /* Night mode text color */
+        /* 日间模式 */
+        .day-mode {
+            background-color: #fff;
+            color: #000;
         }
-
-        body.night-mode .sidebar {
-            background-color: #1e1e1e; /* Night mode sidebar background */
-            color: white; /* Night mode text color */
+        .day-mode .sidebar {
+            background-color: #fff;
+            color: #000;
         }
-
-        body.night-mode .directory h2 {
-            color: white; /* Night mode heading color */
+        .day-mode a {
+            color: #1a0dab;
+            text-decoration: none;
         }
-
-        body.night-mode .directory li a {
-            color: white; /* Night mode link color */
+        .day-mode a:hover {
+            color: #ff0000;
+            text-decoration: none;
         }
-
-        body.night-mode .directory li a:hover {
-            background-color: #4a5568; /* Darker on hover */
+        /* 夜间模式 */
+        .night-mode {
+            background-color: #333;
+            color: #fff;
         }
-
-        body.night-mode .markdown {
-            background-color: #1e1e1e; /* Dark background for markdown */
+        .night-mode .sidebar {
+            background-color: #444;
+            color: #fff;
         }
-
-        /* Responsive styles */
+        .night-mode .sidebar h2,
+        .night-mode .sidebar a {
+            color: #000; /* 夜间模式下目录卡片文字为黑色 */
+        }
+        .night-mode a {
+            color: #1e90ff;
+            text-decoration: none;
+        }
+        .night-mode a:hover {
+            color: #ff4500;
+            text-decoration: none;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* 右对齐 */
+        }
+        .search-input {
+            flex-grow: 1;
+            display: block;
+            margin-right: 10px;
+            display: none; /* 默认隐藏 */
+        }
+        .menu-icon, .search-icon, .mode-icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 20px;
+        }
+        /* 移动设备 */
         @media (max-width: 768px) {
             .sidebar {
-                width: 50px;
+                position: absolute;
+                left: 0;
+                top: 50px; /* 页眉高度 */
+                height: calc(100vh - 50px);
+                z-index: 100;
+                background: white;
+                border-right: 1px solid #ddd;
+                display: none; /* 默认隐藏 */
             }
-            .sidebar .toggle-btn {
-                display: block;
+            .sidebar.visible {
+                display: block; /* 点击图标后显示 */
             }
-            .directory {
-                display: none;
+            .search-input {
+                display: none; /* 默认隐藏 */
+                flex-grow: 1;
             }
-            .sidebar .icon {
-                display: block;
-                width: 50px;
-                height: 50px;
-                background-color: #2d3748;
-                color: white;
-                text-align: center;
-                line-height: 50px; /* Center icon vertically */
-                font-size: 24px;
-                border-radius: 5px;
-            }
-            .content {
-                padding-left: 15px; /* Avoid content being too close to the sidebar */
-            }
-            /* Search icon */
-            .search-icon {
-                display: block;
-                cursor: pointer;
-                color: black; /* Day mode icon color */
+            .search-input.active {
+                display: block; /* 点击图标后显示搜索框 */
             }
         }
     </style>
 </head>
-<body>
-    <div class="header">
-        <div class="logo">MHLMH</div>
-        <div class="category">文档分类</div>
-        <div>
-            <span class="mode-toggle" onclick="toggleMode()">🌙</span>
-            <span class="search-icon" onclick="toggleSearch()">🔍</span>
-            <input type="text" id="search" placeholder="搜索内容..." onkeyup="filterContent()" style="display: none;">
+<body class="day-mode">
+
+    <header>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索文档内容..." oninput="searchContent()">
+            <span class="search-icon" onclick="toggleSearchInput()">🔍</span> <!-- 搜索图标 -->
         </div>
-    </div>
+        <div class="logo">MHLMH</div>
+        <div class="header-icons">
+            <span class="mode-icon" onclick="toggleTheme()">🌙</span> <!-- 模式切换图标 -->
+            <span class="menu-icon" onclick="toggleMenu()">☰</span> <!-- 目录图标 -->
+        </div>
+    </header>
+
     <div class="container">
         <div class="sidebar" id="sidebar">
-            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-            <div class="directory" id="directory">
-                <h2>目录</h2>
-                <ul>
-                    <li><a href="#section1" onclick="showSection(event, 'section1')">第一部分</a></li>
-                    <li><a href="#section2" onclick="showSection(event, 'section2')">第二部分</a></li>
-                    <li><a href="#section3" onclick="showSection(event, 'section3')">第三部分</a></li>
-                </ul>
+            <h2>目录</h2>
+            <div>
+                <div class="card">
+                    <h3 onclick="toggleContent('section1')">第一部分</h3>
+                    <div id="section1-content" style="display: none;">
+                        <a href="#item1" onclick="showDocumentContent()">第一项</a><br>
+                        <a href="#item2" onclick="showDocumentContent()">第二项</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 onclick="toggleContent('section2')">第二部分</h3>
+                    <div id="section2-content" style="display: none;">
+                        <a href="#item3" onclick="showDocumentContent()">第三项</a><br>
+                        <a href="#item4" onclick="showDocumentContent()">第四项</a>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="content">
-            <div class="welcome-message">MHLMH 文档</div>
-            <div class="markdown" id="markdown-content">
-                <div id="section1" class="section" style="display: none;">
-                    <h2>第一部分</h2>
-                    <p>这是第一部分的内容。以下是Python代码示例：</p>
+        <div class="content markdown-body">
+            <div id="homepageContent">
+                <h1>主页</h1>
+                <div class="card">
+                    <h2>欢迎来到文档首页</h2>
+                    <p>这里是主页的内容，您可以在左侧的目录中找到其他部分的内容。</p>
+                </div>
+            </div>
+            <!-- 文档内容的卡片放在这里，默认不显示 -->
+            <div id="documentContent" style="display: none;">
+                <h1>文档内容</h1>
+                <div class="card" id="item1">
+                    <h2>第一项</h2>
+                    <p>这是第一项的内容。</p>
                     <pre><code class="language-python">print("Hello, World!")</code></pre>
                 </div>
-                <div id="section2" class="section" style="display: none;">
-                    <h2>第二部分</h2>
-                    <p>这是第二部分的内容。以下是JavaScript代码示例：</p>
+                <div class="card" id="item2">
+                    <h2>第二项</h2>
+                    <p>这是第二项的内容。</p>
                     <pre><code class="language-javascript">console.log("Hello, World!");</code></pre>
                 </div>
-                <div id="section3" class="section" style="display: none;">
-                    <h2>第三部分</h2>
-                    <p>这是第三部分的内容。以下是HTML代码示例：</p>
-                    <pre><code class="language-html">&lt;p&gt;Hello, World!&lt;/p&gt;</code></pre>
+                <div class="card" id="item3">
+                    <h2>第三项</h2>
+                    <p>这是第三项的内容。</p>
+                    <pre><code class="language-html">&lt;h1&gt;Hello, World!&lt;/h1&gt;</code></pre>
+                </div>
+                <div class="card" id="item4">
+                    <h2>第四项</h2>
+                    <p>这是第四项的内容。</p>
+                    <pre><code class="language-css">body { color: red; }</code></pre>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
     <script>
-        function toggleSidebar() {
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+
+        function toggleContent(id) {
+            const content = document.getElementById(id + '-content');
+            content.style.display = (content.style.display === 'none') ? 'block' : 'none';
+        }
+
+        function showDocumentContent() {
+            // 隐藏主页内容
+            const homepageContent = document.getElementById('homepageContent');
+            homepageContent.style.display = 'none';
+
+            // 显示文档内容
+            const documentContent = document.getElementById('documentContent');
+            documentContent.style.display = 'block';
+        }
+
+        function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
-            const directory = document.getElementById('directory');
-
-            if (sidebar.style.width === '200px') {
-                sidebar.style.width = '50px';
-                directory.style.display = 'none';
-            } else {
-                sidebar.style.width = '200px';
-                directory.style.display = 'block';
-            }
+            sidebar.classList.toggle('visible');
         }
 
-        function showSection(event, sectionId) {
-            event.preventDefault(); // Prevent default anchor behavior
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                section.style.display = 'none'; // Hide all sections
-            });
-            document.getElementById(sectionId).style.display = 'block'; // Show selected section
-        }
-
-        function filterContent() {
-            const searchTerm = document.getElementById('search').value.toLowerCase();
-            const sections = document.querySelectorAll('.markdown > .section');
-
-            sections.forEach(section => {
-                const text = section.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
+        function searchContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('#documentContent .card');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? 'block' : 'none';
             });
         }
 
-        function toggleSearch() {
-            const searchInput = document.getElementById('search');
-            if (searchInput.style.display === 'none' || searchInput.style.display === '') {
-                searchInput.style.display = 'block';
-                searchInput.focus();
-            } else {
-                searchInput.style.display = 'none';
-            }
+        function toggleSearchInput() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.classList.toggle('active');
         }
 
-        function toggleMode() {
+        function toggleTheme() {
             const body = document.body;
-            const modeToggle = document.querySelector('.mode-toggle');
-
-            body.classList.toggle('night-mode');
-
-            if (body.classList.contains('night-mode')) {
-                modeToggle.textContent = '🌞'; // Change to day mode icon
+            if (body.classList.contains('day-mode')) {
+                body.classList.remove('day-mode');
+                body.classList.add('night-mode');
             } else {
-                modeToggle.textContent = '🌙'; // Change to night mode icon
+                body.classList.remove('night-mode');
+                body.classList.add('day-mode');
             }
         }
     </script>
