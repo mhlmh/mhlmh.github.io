@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档页面</title>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/styles/github.min.css">
+    <!-- 引入 FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 引入 marked.js 用于 Markdown 渲染 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             transition: background-color 0.5s, color 0.5s;
             margin: 0;
         }
+
+        /* 页眉样式 */
         header {
             display: flex;
             justify-content: space-between;
@@ -22,11 +26,8 @@
             position: relative;
             z-index: 100;
         }
-        .menu-icon {
-            cursor: pointer;
-            font-size: 20px;
-            margin-right: 20px;
-        }
+
+        /* LOGO 样式 */
         .logo {
             font-size: 25px;
             font-weight: bold;
@@ -34,318 +35,277 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .container {
+
+        /* 页眉右侧图标 */
+        .icons-container {
             display: flex;
-            height: calc(100vh - 50px);
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
         }
-        .sidebar {
-            width: 250px;
-            padding: 20px;
-            transition: background-color 0.5s;
-            display: none;
-            overflow-y: auto;
-        }
-        .sidebar.visible {
-            display: block;
-        }
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            background: #f9f9f9;
-        }
-        h1, h2, h3, h4 {
-            transition: color 0.5s;
-        }
-        /* 日间模式 */
-        .day-mode {
-            background-color: #fff;
-            color: #000;
-        }
-        .day-mode .sidebar {
-            background-color: #fff;
-            color: #000;
-        }
-        .day-mode .card {
-            color: #333;
-        }
-        .day-mode .card h1,
-        .day-mode .card h2,
-        .day-mode .card h3,
-        .day-mode .card h4 {
-            color: #000;
-        }
-        .day-mode a {
-            color: #000;
-            text-decoration: none;
-        }
-        .day-mode a:hover {
-            color: #ff0000;
-        }
-      /* 夜间模式 */
-.night-mode {
-    background-color: #000; /* 页面整体背景色为黑色 */
-    color: rgba(255, 255, 255, 0.5); /* 所有文字颜色为50%灰色 */
-}
 
-.night-mode .sidebar {
-    background-color: #000; /* 目录背景色与页面背景一致 */
-    color: rgba(255, 255, 255, 0.5); /* 目录文字颜色为50%灰色 */
-}
+        .menu-icon, .search-icon, .mode-icon {
+            cursor: pointer;
+            font-size: 20px;
+            margin-right: 20px;
+        }
 
-.night-mode .card {
-    background-color: #000; /* 卡片背景色与页面背景一致 */
-    color: rgba(255, 255, 255, 0.5); /* 卡片内文字颜色为50%灰色 */
-    border-color: #333; /* 卡片的边框与背景稍有区别 */
-}
-
-.night-mode .card h1,
-.night-mode h1,
-.night-mode .card h2,
-.night-mode .card h3,
-.night-mode .card h4 {
-    color: rgba(255, 255, 255, 0.5); /* 所有标题颜色为50%灰色，包括h1 */
-}
-
-.night-mode a {
-    color: rgba(255, 255, 255, 0.5); /* 链接文字颜色为50%灰色 */
-    text-decoration: none;
-}
-
-.night-mode a:hover {
-    color: rgba(255, 255, 255, 0.7); /* 链接悬停时颜色稍微变亮 */
-}
-
-.night-mode a:active {
-    color: #000; /* 点击链接后变为黑色 */
-}
-
-/* 通用链接缩进和悬停效果 */
-a {
-    display: block;
-    padding-left: 10px;
-}
-
-a:hover {
-    background-color: #444; /* 悬停时链接背景颜色稍微变亮 */
-}
+        /* 搜索框样式 */
         .search-container {
             display: flex;
             align-items: center;
             margin-left: auto;
         }
+
         .search-input {
             flex-grow: 1;
-            display: block;
             margin-right: 10px;
-            display: none;
+            display: none; /* 移动设备下隐藏 */
+            position: absolute; /* 使搜索框覆盖其他内容 */
+            top: 60px; /* 让搜索框从 header 下方出现 */
+            left: 0;
+            width: 100%;
+            z-index: 200; /* 确保在最上层 */
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
         }
-        .search-icon, .mode-icon {
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 20px;
-        }
-        /* 链接缩进 */
-        a {
+
+        .search-input.active {
             display: block;
-            padding-left: 10px;
         }
-        /* 链接悬停效果 */
-        a:hover {
-            background-color: #eee;
-        }
-        /* 移动设备 */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: absolute;
-                left: 0;
-                top: 50px;
-                height: calc(100vh - 50px);
-                z-index: 100;
-                background: white;
-                border-right: 1px solid #ddd;
-                display: none;
-            }
-            .sidebar.visible {
-                display: block;
-            }
+
+        /* 响应式：大屏设备显示搜索框 */
+        @media (min-width: 768px) {
             .search-input {
-                display: none;
-                flex-grow: 1;
-            }
-            .search-input.active {
-                display: block;
+                display: block !important; /* 确保大屏设备上搜索框显示 */
+                position: static;
+                z-index: auto;
+                width: auto;
+                margin: 0;
+                padding: 5px;
             }
             .search-icon {
-                font-size: 30px;
+                display: none;
             }
+        }
+
+        /* 卡片样式 */
+        .card {
+            padding: 20px;
+            margin: 20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+
+        /* 隐藏内容样式 */
+        .hidden {
+            display: none;
+        }
+
+        /* 夜间模式 */
+        .night-mode {
+            background-color: #000;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .night-mode header {
+            background-color: #000;
+        }
+
+        .night-mode .card, .night-mode .sidebar {
+            background-color: #000;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .night-mode a {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .night-mode a:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .night-mode a:active {
+            color: #000;
+        }
+
+        /* Markdown 样式 */
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #eaeaea;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        /* 锚点样式 */
+        h1, h2, h3, h4 {
+            padding-top: 80px; /* 预留空间用于锚点点击时的滚动效果 */
+            margin-top: -80px;
         }
     </style>
 </head>
-<body class="day-mode">
+<body>
 
-    <header>
-        <span class="menu-icon" onclick="toggleMenu()">☰</span>
-        <div class="logo">MHLMH</div>
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="搜索文档内容..." oninput="searchContent()">
-            <span class="search-icon" onclick="toggleSearchInput()">🔍</span>
-            <span class="mode-icon" onclick="toggleTheme()">🌙</span>
-        </div>
-    </header>
+<header>
+    <span class="menu-icon" id="menuIcon" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i> <!-- 目录图标 -->
+    </span>
+    <div class="logo">MHLMH</div>
+    <div class="icons-container">
+        <span class="search-icon" id="searchIcon" onclick="toggleSearchInput()">
+            <i class="fas fa-search"></i> <!-- 搜索图标 -->
+        </span>
+        <span class="mode-icon" id="modeIcon" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i> <!-- 夜间模式图标 -->
+        </span>
+    </div>
+</header>
 
-    <div class="container">
-        <div class="sidebar" id="sidebar">
-            <div class="card">
-                <h2>目录</h2>
-                <div id="section1-content">
-                    <a href="#item1" onclick="showDocumentContent('item1')">第一项</a>
-                    <a href="#item2" onclick="showDocumentContent('item2')">第二项</a>
-                    <a href="#item3" onclick="showDocumentContent('item3')">第三项</a>
-                    <a href="#item4" onclick="showDocumentContent('item4')">第四项</a>
-                </div>
-            </div>
-        </div>
-        <div class="content markdown-body">
-            <div id="homepageContent">
-                <div class="card">
-                <h1 style="text-align: center;">MHLMH 托管页</h1>
-                    <h3>节点：美国洛杉矶 [LA, US]</h3>
-<p>●  托管说明：此页面为 MHLMH 使用在 Github 上的托管服务，由 Github Page 支持</p>
-                    <p>
-●  测试速度：<b>点此下载</b> 100MB 测试文件
-
-       <p>●  浏览资源：<b>点此查阅</b> 本站资源存储目录<br>
-        （某些目录可能加密，请先获取访问权限）
-
-       <p>●  激活软件：<br>
-           ○  激活 IDM 下载工具，请复制以下命令：</p><code>iwr -useb https://lvmh.eu.org/storage/tool/IAS/IAS.ps1 | iex</code></p>粘贴到 Powershell 中（个人激活试用限制期限，原帖可参阅 Github 项目，请支持正版软件）；
-<br>
-           ○  激活 Windows 系统，请 <b>点此下载</b> HEU KMS Activator（仅供个人研究激活原理试用）
-
-<p>
-       ●   DD 重装：请 <b">点此跳转</b> 详阅安装前须知
-<h3>更多服务器工具和功能正在测试中，后续视测试情况陆续上线，敬请关注。</h3>
-</div>
-            </div>
-            <div id="documentContent" style="display: none;">
-                <h1>文档内容</h1>
-                <div class="card" id="item1" style="display: none;">
-                    <h2>第一项</h2>
-                    <div class="markdown" id="markdown-item1">
-                        <script type="text/markdown">
-                            # 标题 1
-                            这是第一项的内容。
-                            
-                            ```python
-                            print("Hello, World!")
-                            ```
-                        </script>
-                    </div>
-                </div>
-                <div class="card" id="item2" style="display: none;">
-                    <h2>第二项</h2>
-                    <div class="markdown" id="markdown-item2">
-                        <script type="text/markdown">
-                            # 标题 2
-                            这是第二项的内容。
-                            
-                            ```javascript
-                            console.log("Hello, World!");
-                            ```
-                        </script>
-                    </div>
-                </div>
-                <div class="card" id="item3" style="display: none;">
-                    <h2>第三项</h2>
-                    <div class="markdown" id="markdown-item3">
-                        <script type="text/markdown">
-                            # 标题 3
-                            这是第三项的内容。
-                            
-                            ```html
-                            <h1>Hello, World!</h1>
-                            ```
-                        </script>
-                    </div>
-                </div>
-                <div class="card" id="item4" style="display: none;">
-                    <h2>第四项</h2>
-                    <div class="markdown" id="markdown-item4">
-                        <script type="text/markdown">
-                            # 标题 4
-                            这是第四项的内容。
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="content">
+    <!-- 主页卡片内容 -->
+    <div class="card" id="homeCard">
+        <h1>主页卡片</h1>
+        <p>这是主页卡片的内容。点击目录图标可以显示更多内容。</p>
     </div>
 
-    <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.2.8/marked.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 渲染所有的 Markdown
-            document.querySelectorAll('.markdown').forEach(function(element) {
-                const markdownContent = element.querySelector('script[type="text/markdown"]').textContent;
-                element.innerHTML = marked(markdownContent);
-                const blocks = element.querySelectorAll('pre code');
-                blocks.forEach((block) => {
-                    hljs.highlightBlock(block);
-                });
-            });
+    <!-- 目录卡片内容 -->
+    <div class="card hidden" id="menuCard">
+        <h1>目录</h1>
+        <ul>
+            <li><a href="#section1" onclick="navigateToSection('section1')">文档内容1</a></li>
+            <li><a href="#section2" onclick="navigateToSection('section2')">文档内容2</a></li>
+        </ul>
+    </div>
+
+    <!-- 文档内容1 -->
+    <div class="card hidden" id="section1">
+        <h2>文档内容1</h2>
+        <p>这里是文档的第一个内容部分。可以添加更多内容或示例。</p>
+    </div>
+
+    <!-- 文档内容2 -->
+    <div class="card hidden" id="section2">
+        <h2>文档内容2</h2>
+        <p>这里是文档的第二个内容部分。</p>
+    </div>
+</div>
+
+<!-- 搜索输入框 -->
+<input type="text" id="searchInput" class="search-input" placeholder="搜索内容..." oninput="filterContent()">
+
+<script>
+    let isNightMode = false;
+    let isMenuOpen = false;
+
+    // 夜间模式切换功能
+    function toggleTheme() {
+        isNightMode = !isNightMode;
+        document.body.classList.toggle('night-mode', isNightMode);
+
+        // 更改夜间模式图标
+        const modeIcon = document.getElementById('modeIcon').querySelector('i');
+        modeIcon.classList.toggle('fa-moon', !isNightMode);
+        modeIcon.classList.toggle('fa-sun', isNightMode);
+    }
+
+    // 目录图标切换及卡片显示
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+
+        // 切换目录图标
+        const menuIcon = document.getElementById('menuIcon').querySelector('i');
+        menuIcon.classList.toggle('fa-bars', !isMenuOpen);
+        menuIcon.classList.toggle('fa-times', isMenuOpen);
+
+        // 显示或隐藏目录卡片
+        const homeCard = document.getElementById('homeCard');
+        const menuCard = document.getElementById('menuCard');
+
+        if (isMenuOpen) {
+            homeCard.classList.add('hidden'); // 隐藏主页卡片
+            menuCard.classList.remove('hidden'); // 显示目录卡片
+        } else {
+            homeCard.classList.remove('hidden'); // 显示主页卡片
+            menuCard.classList.add('hidden'); // 隐藏目录卡片
+        }
+    }
+
+    // 移动设备搜索框切换
+    function toggleSearchInput() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.classList.toggle('active');
+    }
+
+    // 点击目录链接后，显示对应内容并隐藏其它内容
+    function navigateToSection(sectionId) {
+        const sections = document.querySelectorAll('.content .card:not(#homeCard)');
+        sections.forEach(section => {
+            section.classList.add('hidden'); // 隐藏所有文档内容
         });
 
-        // 切换文档内容
-        function showDocumentContent(itemId) {
-            const selectedItem = document.getElementById(itemId);
-            document.querySelectorAll('#documentContent .card').forEach(card => {
-                card.style.display = 'none'; // 隐藏所有内容
+        const targetSection = document.getElementById(sectionId);
+        targetSection.classList.remove('hidden'); // 显示目标卡片
+
+        // 平滑滚动到目标内容
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+
+        // 自动折叠目录
+        toggleMenu();
+    }
+
+    // 过滤文档内容
+    function filterContent() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const sections = document.querySelectorAll('.content .card:not(#homeCard)');
+
+        if (input === '') {
+            sections.forEach(section => {
+                section.classList.add('hidden'); // 隐藏所有内容
             });
-            selectedItem.style.display = 'block'; // 显示选定的内容
-
-            // 隐藏主页内容
-            document.getElementById('homepageContent').style.display = 'none';
-            document.getElementById('documentContent').style.display = 'block'; // 显示文档内容
+            return; // 结束函数
         }
 
-        function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('visible');
-        }
-
-        function searchContent() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('#documentContent .card');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(query) ? 'block' : 'none';
-            });
-        }
-
-        function toggleSearchInput() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.classList.toggle('active');
-            searchInput.focus();
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            if (body.classList.contains('day-mode')) {
-                body.classList.remove('day-mode');
-                body.classList.add('night-mode');
+        sections.forEach(section => {
+            const text = section.textContent.toLowerCase();
+            if (text.includes(input)) {
+                section.classList.remove('hidden'); // 显示匹配内容
             } else {
-                body.classList.remove('night-mode');
-                body.classList.add('day-mode');
+                section.classList.add('hidden'); // 隐藏不匹配内容
             }
-        }
-    </script>
+        });
+    }
+
+    // 页面加载时直接渲染 Markdown 内容
+    document.addEventListener('DOMContentLoaded', () => {
+        const markdownContent = `
+# 示例内容
+
+## 这是一个二级标题
+这是一段示例文本，您可以在这里添加更多的内容。
+
+### 这是一个三级标题
+- 列表项 1
+- 列表项 2
+- 列表项 3
+
+\`\`\`javascript
+function helloWorld() {
+    console.log("Hello, world!");
+}
+\`\`\`
+        `;
+        
+        // 渲染 Markdown 内容
+        document.getElementById('section1').innerHTML += marked(markdownContent);
+    });
+</script>
+
 </body>
 </html>
