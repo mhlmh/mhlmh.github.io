@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文档管理仪表板</title>
+  <title>MHLMH 博客</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -28,7 +29,12 @@
       width: 250px;
       padding: 20px;
       color: white;
+      position: relative;
       transition: all 0.3s ease;
+    }
+
+    .sidebar.active {
+      left: 0;
     }
 
     .sidebar.collapsed {
@@ -65,10 +71,6 @@
       background-color: #ff7b00;
     }
 
-    .sidebar nav ul li a .icon {
-      margin-right: 10px;
-    }
-
     /* 内容区 */
     .content {
       flex-grow: 1;
@@ -94,12 +96,16 @@
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      position: absolute;
+      right: 0;
+      transition: right 0.3s;
+      opacity: 0;
+      visibility: hidden;
     }
 
     .search-bar .icon {
-      position: absolute;
-      right: 10px;
       cursor: pointer;
+      font-size: 1.5em;
     }
 
     .user-menu {
@@ -114,33 +120,21 @@
       margin-left: 15px;
     }
 
-    .document-list {
-      background-color: #f4f7fc;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* 隐藏或显示内容的类 */
+    .hidden {
+      display: none;
     }
 
-    .document-list h2 {
-      font-size: 1.5em;
+    .post {
       margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
     }
 
-    .document-list .document-item {
-      background-color: white;
-      padding: 15px;
-      border-radius: 8px;
+    .post h2 {
       margin-bottom: 10px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .document-list .document-item h3 {
-      margin-bottom: 5px;
-      font-size: 1.2em;
-    }
-
-    .document-list .document-item p {
-      color: #666;
     }
 
     /* 响应式设计 */
@@ -170,6 +164,16 @@
 
       .search-bar input {
         width: 200px;
+        right: -200px; /* 初始状态在视图外 */
+        visibility: hidden; /* 初始状态不可见 */
+      }
+
+      .close-icon {
+        display: none; /* 默认隐藏 */
+      }
+
+      .sidebar.active .close-icon {
+        display: block; /* 展开时显示 */
       }
     }
 
@@ -190,13 +194,14 @@
   <div class="container">
     <!-- 侧边导航栏 -->
     <aside class="sidebar" id="sidebar">
-      <div class="logo">文档管理</div>
+      <div class="logo">MHLMH 博客</div>
+      <div class="close-icon" id="closeIcon"></div>
       <nav>
         <ul>
-          <li><a href="#"><span class="icon">🏠</span> 仪表板</a></li>
-          <li><a href="#"><span class="icon">📄</span> 文档列表</a></li>
-          <li><a href="#"><span class="icon">📁</span> 分类管理</a></li>
-          <li><a href="#"><span class="icon">⬆️</span> 上传文档</a></li>
+          <li><a href="#" data-target="home"><span class="icon">🏠</span> 首页</a></li>
+          <li>
+            <a href="#" data-target="blog-content"><span class="icon">📝</span> 博客文章</a>
+          </li>
         </ul>
       </nav>
     </aside>
@@ -205,55 +210,122 @@
     <main class="content">
       <header>
         <span class="hamburger" id="hamburger">☰</span>
-        <div class="search-bar">
-          <input type="text" id="search" placeholder="搜索文档...">
-          <span class="icon">🔍</span>
-        </div>
         <div class="user-menu">
-          <span>MHLMH</span>
-          <img src="https://mhlmh.eu.org/m.svg" alt="用户头像">
+          <span><img src="m.svg" alt="用户头像"></span>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="search" placeholder="搜索文章...">
+          <span class="icon" id="searchIcon">🔍</span>
         </div>
       </header>
+<hr><br>
+<!-- 首页内容 -->
+<section class="home-content" id="home-content"> <!-- 移除 hidden 类 -->
+  <h2>欢迎来到 MHLMH 博客</h2>
+  <p>在这里，您可以阅读最新的博客文章和分享想法。</p>
+</section>
 
-      <section class="document-list" id="document-list">
-        <h2>文档列表</h2>
-        <div class="document-item">
-          <h3>文档 1</h3>
-          <p>这是文档 1 的简短描述。</p>
-        </div>
-        <div class="document-item">
-          <h3>文档 2</h3>
-          <p>这是文档 2 的简短描述。</p>
-        </div>
-        <div class="document-item">
-          <h3>文档 3</h3>
-          <p>这是文档 3 的简短描述。</p>
-        </div>
-      </section>
+<!-- 博客文章内容 -->
+<section class="blog-content hidden" id="blog-content">
+  <h2>博客文章</h2>
+  <div id="blog-posts"></div>
+</section>
     </main>
   </div>
 
-  <script>
-    // 菜单折叠与展开
-    document.getElementById('hamburger').addEventListener('click', function() {
-      var sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('active');
-    });
+<script>
+  // 页面加载时显示首页内容
+  document.addEventListener('DOMContentLoaded', function() {
+    // 显示首页内容
+    document.getElementById('home-content').classList.remove('hidden');
+    // 隐藏博客内容
+    document.getElementById('blog-content').classList.add('hidden');
+  });
 
-    // 文档搜索功能
-    document.getElementById('search').addEventListener('input', function() {
-      var searchTerm = this.value.toLowerCase();
-      var documents = document.querySelectorAll('.document-item');
+  // 菜单点击后切换显示内容
+  document.querySelectorAll('.sidebar nav ul li a[data-target]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
 
-      documents.forEach(function(doc) {
-        if (doc.textContent.toLowerCase().includes(searchTerm)) {
-          doc.style.display = 'block';
-        } else {
-          doc.style.display = 'none';
-        }
+      // 隐藏所有内容区
+      document.querySelectorAll('.content section').forEach(function(section) {
+        section.classList.add('hidden');
       });
-    });
-  </script>
 
+      // 根据链接显示内容
+      var target = this.getAttribute('data-target');
+      if (target === 'home') {
+        document.getElementById('home-content').classList.remove('hidden');
+      } else if (target === 'blog-content') {
+        document.getElementById('blog-content').classList.remove('hidden');
+        loadBlogPosts(); // 加载博客文章
+      }
+
+      // 收起侧边栏（移动设备）
+      var sidebar = document.getElementById('sidebar');
+      sidebar.classList.remove('active');
+      document.getElementById('hamburger').textContent = '☰';
+    });
+  });
+
+  // 加载博客文章
+  function loadBlogPosts() {
+    fetch('README.md')
+      .then(response => response.text())
+      .then(text => {
+        const postsContainer = document.getElementById('blog-posts');
+        const posts = text.split('---'); // 分隔文章
+        postsContainer.innerHTML = ''; // 清空内容
+
+        posts.forEach((post, index) => {
+          const postTitle = post.match(/# (.+)/); // 获取标题
+          if (postTitle) {
+            const title = postTitle[1].trim();
+            const titleElement = document.createElement('div');
+            titleElement.className = 'post-title';
+            titleElement.textContent = title;
+            titleElement.addEventListener('click', () => showPostContent(post, index));
+            postsContainer.appendChild(titleElement);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('无法加载博客文章:', error);
+      });
+  }
+
+  // 显示博客文章内容
+  function showPostContent(post, index) {
+    const postContent = post.replace(/# .+/, '').trim(); // 去掉标题，保留正文
+    const postCard = document.createElement('div');
+    postCard.className = 'post-card';
+    postCard.innerHTML = marked(postContent); // 使用 marked.js 解析 Markdown
+    const postsContainer = document.getElementById('blog-posts');
+    postsContainer.appendChild(postCard);
+  }
+
+  // 菜单折叠与展开，并切换图标
+  document.getElementById('hamburger').addEventListener('click', function() {
+    var sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('active');
+    this.textContent = this.textContent === '☰' ? '✖' : '☰';
+  });
+
+  // 点击关闭图标折叠菜单
+  document.getElementById('closeIcon').addEventListener('click', function() {
+    var sidebar = document.getElementById('sidebar');
+    sidebar.classList.remove('active');
+    document.getElementById('hamburger').textContent = '☰';
+  });
+
+  // 点击搜索图标显示搜索框
+  document.getElementById('searchIcon').addEventListener('click', function() {
+    const searchInput = document.getElementById('search');
+    const isHidden = searchInput.style.right === '-200px';
+    searchInput.style.right = isHidden ? '0px' : '-200px';
+    searchInput.style.opacity = isHidden ? '1' : '0';
+    searchInput.style.visibility = isHidden ? 'visible' : 'hidden';
+  });
+</script>
 </body>
 </html>
