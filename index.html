@@ -1,311 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文档页面</title>
-    <!-- 引入 FontAwesome 图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- 引入 marked.js 用于 Markdown 渲染 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            transition: background-color 0.5s, color 0.5s;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文档管理仪表板</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* 页眉样式 */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: inherit;
-            border-bottom: 1px solid #ddd;
-            position: relative;
-            z-index: 100;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7fc;
+      color: #333;
+    }
 
-        /* LOGO 样式 */
-        .logo {
-            font-size: 25px;
-            font-weight: bold;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
 
-        /* 页眉右侧图标 */
-        .icons-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            width: 100%;
-        }
+    /* 侧边导航栏 */
+    .sidebar {
+      background-color: #1f1f1f;
+      width: 250px;
+      padding: 20px;
+      color: white;
+      transition: all 0.3s ease;
+    }
 
-        .menu-icon, .search-icon, .mode-icon {
-            cursor: pointer;
-            font-size: 20px;
-            margin-right: 20px;
-        }
+    .sidebar.collapsed {
+      width: 80px;
+    }
 
-        /* 搜索框样式 */
-        .search-container {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-        }
+    .sidebar .logo {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
 
-        .search-input {
-            flex-grow: 1;
-            margin-right: 10px;
-            display: none; /* 移动设备下隐藏 */
-            position: absolute; /* 使搜索框覆盖其他内容 */
-            top: 60px; /* 让搜索框从 header 下方出现 */
-            left: 0;
-            width: 100%;
-            z-index: 200; /* 确保在最上层 */
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
+    .sidebar nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
 
-        .search-input.active {
-            display: block;
-        }
+    .sidebar nav ul li {
+      margin: 20px 0;
+    }
 
-        /* 响应式：大屏设备显示搜索框 */
-        @media (min-width: 768px) {
-            .search-input {
-                display: block !important; /* 确保大屏设备上搜索框显示 */
-                position: static;
-                z-index: auto;
-                width: auto;
-                margin: 0;
-                padding: 5px;
-            }
-            .search-icon {
-                display: none;
-            }
-        }
+    .sidebar nav ul li a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.1em;
+      display: block;
+      padding: 10px;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+    }
 
-        /* 卡片样式 */
-        .card {
-            padding: 20px;
-            margin: 20px;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-        }
+    .sidebar nav ul li a:hover {
+      background-color: #ff7b00;
+    }
 
-        /* 隐藏内容样式 */
-        .hidden {
-            display: none;
-        }
+    .sidebar nav ul li a .icon {
+      margin-right: 10px;
+    }
 
-        /* 夜间模式 */
-        .night-mode {
-            background-color: #000;
-            color: rgba(255, 255, 255, 0.5);
-        }
+    /* 内容区 */
+    .content {
+      flex-grow: 1;
+      background-color: white;
+      padding: 20px;
+    }
 
-        .night-mode header {
-            background-color: #000;
-        }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-        .night-mode .card, .night-mode .sidebar {
-            background-color: #000;
-            color: rgba(255, 255, 255, 0.5);
-        }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
 
-        .night-mode a {
-            color: rgba(255, 255, 255, 0.5);
-        }
+    .search-bar input {
+      width: 300px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
 
-        .night-mode a:hover {
-            color: rgba(255, 255, 255, 0.7);
-        }
+    .search-bar .icon {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+    }
 
-        .night-mode a:active {
-            color: #000;
-        }
+    .user-menu {
+      display: flex;
+      align-items: center;
+    }
 
-        /* Markdown 样式 */
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
+    .user-menu img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: 15px;
+    }
 
-        code {
-            background-color: #eaeaea;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
+    .document-list {
+      background-color: #f4f7fc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-        /* 锚点样式 */
-        h1, h2, h3, h4 {
-            padding-top: 80px; /* 预留空间用于锚点点击时的滚动效果 */
-            margin-top: -80px;
-        }
-    </style>
+    .document-list h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    .document-list .document-item {
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .document-list .document-item h3 {
+      margin-bottom: 5px;
+      font-size: 1.2em;
+    }
+
+    .document-list .document-item p {
+      color: #666;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .hamburger {
+        display: block;
+        font-size: 1.5em;
+        cursor: pointer;
+      }
+
+      .search-bar input {
+        width: 200px;
+      }
+    }
+
+    /* 隐藏汉堡菜单图标在桌面端 */
+    .hamburger {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <span class="menu-icon" id="menuIcon" onclick="toggleMenu()">
-        <i class="fas fa-bars"></i> <!-- 目录图标 -->
-    </span>
-    <div class="logo">MHLMH</div>
-    <div class="icons-container">
-        <span class="search-icon" id="searchIcon" onclick="toggleSearchInput()">
-            <i class="fas fa-search"></i> <!-- 搜索图标 -->
-        </span>
-        <span class="mode-icon" id="modeIcon" onclick="toggleTheme()">
-            <i class="fas fa-moon"></i> <!-- 夜间模式图标 -->
-        </span>
-    </div>
-</header>
-
-<div class="content">
-    <!-- 主页卡片内容 -->
-    <div class="card" id="homeCard">
-        <h1>主页卡片</h1>
-        <p>这是主页卡片的内容。点击目录图标可以显示更多内容。</p>
-    </div>
-
-    <!-- 目录卡片内容 -->
-    <div class="card hidden" id="menuCard">
-        <h1>目录</h1>
+  <div class="container">
+    <!-- 侧边导航栏 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">文档管理</div>
+      <nav>
         <ul>
-            <li><a href="#section1" onclick="navigateToSection('section1')">文档内容1</a></li>
-            <li><a href="#section2" onclick="navigateToSection('section2')">文档内容2</a></li>
+          <li><a href="#"><span class="icon">🏠</span> 仪表板</a></li>
+          <li><a href="#"><span class="icon">📄</span> 文档列表</a></li>
+          <li><a href="#"><span class="icon">📁</span> 分类管理</a></li>
+          <li><a href="#"><span class="icon">⬆️</span> 上传文档</a></li>
         </ul>
-    </div>
+      </nav>
+    </aside>
 
-    <!-- 文档内容1 -->
-    <div class="card hidden" id="section1">
-        <h2>文档内容1</h2>
-        <p>这里是文档的第一个内容部分。可以添加更多内容或示例。</p>
-    </div>
+    <!-- 主内容区 -->
+    <main class="content">
+      <header>
+        <span class="hamburger" id="hamburger">☰</span>
+        <div class="search-bar">
+          <input type="text" id="search" placeholder="搜索文档...">
+          <span class="icon">🔍</span>
+        </div>
+        <div class="user-menu">
+          <span>MHLMH</span>
+          <img src="https://mhlmh.eu.org/m.svg" alt="用户头像">
+        </div>
+      </header>
 
-    <!-- 文档内容2 -->
-    <div class="card hidden" id="section2">
-        <h2>文档内容2</h2>
-        <p>这里是文档的第二个内容部分。</p>
-    </div>
-</div>
+      <section class="document-list" id="document-list">
+        <h2>文档列表</h2>
+        <div class="document-item">
+          <h3>文档 1</h3>
+          <p>这是文档 1 的简短描述。</p>
+        </div>
+        <div class="document-item">
+          <h3>文档 2</h3>
+          <p>这是文档 2 的简短描述。</p>
+        </div>
+        <div class="document-item">
+          <h3>文档 3</h3>
+          <p>这是文档 3 的简短描述。</p>
+        </div>
+      </section>
+    </main>
+  </div>
 
-<!-- 搜索输入框 -->
-<input type="text" id="searchInput" class="search-input" placeholder="搜索内容..." oninput="filterContent()">
-
-<script>
-    let isNightMode = false;
-    let isMenuOpen = false;
-
-    // 夜间模式切换功能
-    function toggleTheme() {
-        isNightMode = !isNightMode;
-        document.body.classList.toggle('night-mode', isNightMode);
-
-        // 更改夜间模式图标
-        const modeIcon = document.getElementById('modeIcon').querySelector('i');
-        modeIcon.classList.toggle('fa-moon', !isNightMode);
-        modeIcon.classList.toggle('fa-sun', isNightMode);
-    }
-
-    // 目录图标切换及卡片显示
-    function toggleMenu() {
-        isMenuOpen = !isMenuOpen;
-
-        // 切换目录图标
-        const menuIcon = document.getElementById('menuIcon').querySelector('i');
-        menuIcon.classList.toggle('fa-bars', !isMenuOpen);
-        menuIcon.classList.toggle('fa-times', isMenuOpen);
-
-        // 显示或隐藏目录卡片
-        const homeCard = document.getElementById('homeCard');
-        const menuCard = document.getElementById('menuCard');
-
-        if (isMenuOpen) {
-            homeCard.classList.add('hidden'); // 隐藏主页卡片
-            menuCard.classList.remove('hidden'); // 显示目录卡片
-        } else {
-            homeCard.classList.remove('hidden'); // 显示主页卡片
-            menuCard.classList.add('hidden'); // 隐藏目录卡片
-        }
-    }
-
-    // 移动设备搜索框切换
-    function toggleSearchInput() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.classList.toggle('active');
-    }
-
-    // 点击目录链接后，显示对应内容并隐藏其它内容
-    function navigateToSection(sectionId) {
-        const sections = document.querySelectorAll('.content .card:not(#homeCard)');
-        sections.forEach(section => {
-            section.classList.add('hidden'); // 隐藏所有文档内容
-        });
-
-        const targetSection = document.getElementById(sectionId);
-        targetSection.classList.remove('hidden'); // 显示目标卡片
-
-        // 平滑滚动到目标内容
-        targetSection.scrollIntoView({ behavior: 'smooth' });
-
-        // 自动折叠目录
-        toggleMenu();
-    }
-
-    // 过滤文档内容
-    function filterContent() {
-        const input = document.getElementById('searchInput').value.toLowerCase();
-        const sections = document.querySelectorAll('.content .card:not(#homeCard)');
-
-        if (input === '') {
-            sections.forEach(section => {
-                section.classList.add('hidden'); // 隐藏所有内容
-            });
-            return; // 结束函数
-        }
-
-        sections.forEach(section => {
-            const text = section.textContent.toLowerCase();
-            if (text.includes(input)) {
-                section.classList.remove('hidden'); // 显示匹配内容
-            } else {
-                section.classList.add('hidden'); // 隐藏不匹配内容
-            }
-        });
-    }
-
-    // 页面加载时直接渲染 Markdown 内容
-    document.addEventListener('DOMContentLoaded', () => {
-        const markdownContent = `
-# 示例内容
-
-## 这是一个二级标题
-这是一段示例文本，您可以在这里添加更多的内容。
-
-### 这是一个三级标题
-- 列表项 1
-- 列表项 2
-- 列表项 3
-
-\`\`\`javascript
-function helloWorld() {
-    console.log("Hello, world!");
-}
-\`\`\`
-        `;
-        
-        // 渲染 Markdown 内容
-        document.getElementById('section1').innerHTML += marked(markdownContent);
+  <script>
+    // 菜单折叠与展开
+    document.getElementById('hamburger').addEventListener('click', function() {
+      var sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
     });
-</script>
+
+    // 文档搜索功能
+    document.getElementById('search').addEventListener('input', function() {
+      var searchTerm = this.value.toLowerCase();
+      var documents = document.querySelectorAll('.document-item');
+
+      documents.forEach(function(doc) {
+        if (doc.textContent.toLowerCase().includes(searchTerm)) {
+          doc.style.display = 'block';
+        } else {
+          doc.style.display = 'none';
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
