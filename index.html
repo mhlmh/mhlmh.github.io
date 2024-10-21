@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,10 +79,15 @@
         }
 
         #search {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding: 10px;
             width: 100%;
             display: none; /* 默认隐藏搜索框 */
+        }
+
+        .search-results {
+            display: none; /* 默认隐藏搜索结果 */
+            margin-top: 10px;
         }
 
         .dark-theme {
@@ -149,8 +154,8 @@
         <button id="menu-toggle">☰</button>
         <img src="m.svg" alt="Logo" class="logo" id="logo">
         <div style="display: flex; align-items: center;">
-            <input type="text" id="search" placeholder="搜索文章..." />
             <button id="search-btn">🔍</button>
+            <input type="text" id="search" placeholder="搜索文章..." />
         </div>
         <button id="theme-toggle">🌙</button>
     </header>
@@ -170,6 +175,10 @@
             <div id="article">
                 <h2 id="article-title"></h2>
                 <div id="article-content"></div>
+            </div>
+            <div class="search-results" id="search-results">
+                <h3>搜索结果:</h3>
+                <ul id="results-list"></ul>
             </div>
         </main>
     </div>
@@ -229,6 +238,7 @@
                 document.getElementById('article-content').innerHTML = marked(content); // 使用marked.js转换Markdown
                 document.getElementById('home').style.display = 'none'; // 隐藏主页内容
                 document.getElementById('article').style.display = 'block'; // 显示文章内容
+                document.getElementById('search-results').style.display = 'none'; // 隐藏搜索结果
             } else {
                 // 如果内容为空，显示主页
                 document.getElementById('home').style.display = 'block';
@@ -238,33 +248,60 @@
 
         // 全局搜索功能
         const searchInput = document.getElementById('search');
+        const searchResultsDiv = document.getElementById('search-results');
+        const resultsList = document.getElementById('results-list');
+
         searchInput.addEventListener('input', function() {
             const query = this.value.toLowerCase();
             const links = document.querySelectorAll('#menu a');
+
+            resultsList.innerHTML = ''; // 清空搜索结果
 
             let hasResults = false; // 追踪是否有搜索结果
 
             links.forEach(link => {
                 const title = link.textContent.toLowerCase();
                 if (title.includes(query)) {
-                    link.parentElement.style.display = 'block'; // 显示匹配的链接
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href="#" data-file="${link.dataset.file}" data-title="${link.dataset.title}">${link.textContent}</a>`;
+                    resultsList.appendChild(listItem); // 添加到结果列表
                     hasResults = true;
-                } else {
-                    link.parentElement.style.display = 'none'; // 隐藏不匹配的链接
                 }
             });
 
             // 根据搜索结果显示主页内容
-            document.getElementById('home').style.display = hasResults ? 'none' : 'block';
-            document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+            if (query === '') {
+                document.getElementById('home').style.display = 'block'; // 显示主页内容
+                searchResultsDiv.style.display = 'none'; // 隐藏搜索结果
+                document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+            } else {
+                document.getElementById('home').style.display = 'none'; // 隐藏主页内容
+                searchResultsDiv.style.display = hasResults ? 'block' : 'none'; // 显示或隐藏搜索结果
+                document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+            }
         });
 
         // 移动设备搜索框控制
         document.getElementById('search-btn').onclick = function() {
             const search = document.getElementById('search');
             search.style.display = search.style.display === 'none' ? 'block' : 'none'; // 切换搜索框
-            this.style.display = search.style.display === 'block' ? 'none' : 'inline'; // 隐藏或显示搜索按钮
+            search.style.marginLeft = '10px'; // 使搜索框出现在搜索图标的左边
+            if (search.style.display === 'block') {
+                search.focus(); // 聚焦到搜索框
+            }
         };
+
+        // 处理搜索结果链接点击
+        resultsList.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const file = e.target.dataset.file;
+                const title = e.target.dataset.title;
+                loadArticle(file, title); // 加载对应文章
+                searchInput.value = ''; // 清空搜索框
+                searchResultsDiv.style.display = 'none'; // 隐藏搜索结果
+            }
+        });
 
     </script>
 </body>
