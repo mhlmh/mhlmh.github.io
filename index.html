@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>博客主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,31 +21,32 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            background-color: #f8f8f8; /* 可以更改为更漂亮的配色 */
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
         }
 
         .logo {
             margin: 0 auto;
-            height: 40px; /* Logo高度 */
+            height: 40px;
         }
 
         .container {
             display: flex;
             flex: 1;
-            overflow: hidden; /* 隐藏溢出部分 */
+            overflow: hidden;
         }
 
         nav {
-            background-color: #fff; /* 可以更改为更漂亮的配色 */
+            background-color: #fff;
             width: 200px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
-            display: none; /* 默认隐藏菜单 */
-            flex-shrink: 0; /* 防止缩小 */
+            display: none;
+            flex-shrink: 0;
         }
 
         nav.show {
-            display: block; /* 在移动设备上显示菜单 */
+            display: block;
         }
 
         nav ul {
@@ -66,27 +69,27 @@
 
         main {
             padding: 20px;
-            flex: 1; /* 让内容区占满剩余空间 */
-            overflow-y: auto; /* 允许内容滚动 */
+            flex: 1;
+            overflow-y: auto;
         }
 
         #home {
-            display: block; /* 默认显示主页 */
+            display: block;
         }
 
         #article {
-            display: none; /* 默认隐藏文章内容 */
+            display: none;
         }
 
         #search {
             margin-bottom: 10px;
             padding: 10px;
             width: 100%;
-            display: none; /* 默认隐藏搜索框 */
+            display: none;
         }
 
         .search-results {
-            display: none; /* 默认隐藏搜索结果 */
+            display: none;
             margin-top: 10px;
         }
 
@@ -115,36 +118,56 @@
             border: none;
             cursor: pointer;
             font-size: 18px;
-            margin-left: 10px; /* 增加与搜索框的间距 */
+            margin-left: 10px;
         }
 
-        /* 大屏设备样式 */
+        /* 自定义样式以确保 github-markdown 样式正常工作 */
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 0;
+            padding: 45px;
+            max-width: 100%;
+            background-color: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        /* 让代码高亮正常工作 */
+        pre {
+            background-color: #f6f8fa;
+            padding: 10px;
+            overflow: auto;
+            border-radius: 3px;
+        }
+
+        /* 针对大屏幕的媒体查询 */
         @media (min-width: 768px) {
             nav {
-                display: block; /* 大屏设备上显示菜单 */
-                height: 100%; /* 菜单高度为100% */
+                display: block;
+                height: 100%;
             }
 
             main {
                 padding: 20px;
-                height: 100%; /* 文章内容高度为100% */
+                height: 100%;
             }
 
             #menu-toggle {
-                display: none; /* 隐藏菜单按钮 */
+                display: none;
             }
 
             #search {
-                display: block; /* 大屏设备上显示搜索框 */
-                margin: 0; /* 移除搜索框的底部边距 */
+                display: block;
+                margin: 0;
             }
 
             #search-btn {
-                display: inline; /* 大屏设备上显示搜索按钮 */
+                display: inline;
             }
 
             .container {
-                flex-direction: row; /* 在大屏设备上水平排列 */
+                flex-direction: row;
             }
         }
     </style>
@@ -154,8 +177,8 @@
         <button id="menu-toggle">☰</button>
         <img src="m.svg" alt="Logo" class="logo" id="logo">
         <div style="display: flex; align-items: center;">
-            <button id="search-btn">🔍</button>
             <input type="text" id="search" placeholder="搜索文章..." />
+            <button id="search-btn">🔍</button>
         </div>
         <button id="theme-toggle">🌙</button>
     </header>
@@ -174,7 +197,7 @@
             </div>
             <div id="article">
                 <h2 id="article-title"></h2>
-                <div id="article-content"></div>
+                <div id="article-content" class="markdown-body"></div>
             </div>
             <div class="search-results" id="search-results">
                 <h3>搜索结果:</h3>
@@ -183,11 +206,12 @@
         </main>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
     <script>
         const themeToggleButton = document.getElementById('theme-toggle');
         let darkMode = false;
 
-        const articles = {}; // 存储文章内容
+        const articles = {};
 
         document.getElementById('menu-toggle').onclick = function() {
             const menu = document.getElementById('menu');
@@ -197,14 +221,12 @@
         themeToggleButton.onclick = function() {
             darkMode = !darkMode;
             document.body.classList.toggle('dark-theme', darkMode);
-            themeToggleButton.innerText = darkMode ? '☀️' : '🌙'; // 切换图标
-            
-            // 反转SVG颜色
+            themeToggleButton.innerText = darkMode ? '☀️' : '🌙';
+
             const logo = document.getElementById('logo');
-            logo.style.filter = darkMode ? 'invert(1)' : 'none'; // 深色模式反转颜色
+            logo.style.filter = darkMode ? 'invert(1)' : 'none';
         };
 
-        // 预加载文章内容
         function preloadArticles() {
             const links = document.querySelectorAll('#menu a');
             links.forEach(link => {
@@ -212,20 +234,20 @@
                 fetch(file)
                     .then(response => response.text())
                     .then(data => {
-                        articles[file] = data; // 存储文章内容
+                        articles[file] = data;
                     });
             });
         }
 
-        preloadArticles(); // 预加载文章
+        preloadArticles();
 
         document.querySelectorAll('#menu a').forEach(link => {
             link.onclick = function(e) {
                 e.preventDefault();
                 const file = this.dataset.file;
-                const title = this.dataset.title; // 获取自定义标题
-                loadArticle(file, title); // 传递标题
-                if (window.innerWidth < 768) { // 移动设备
+                const title = this.dataset.title;
+                loadArticle(file, title);
+                if (window.innerWidth < 768) {
                     document.getElementById('menu').classList.remove('show');
                 }
             };
@@ -234,19 +256,18 @@
         function loadArticle(file, title) {
             const content = articles[file];
             if (content) {
-                document.getElementById('article-title').innerText = title; // 使用自定义标题
-                document.getElementById('article-content').innerHTML = marked(content); // 使用marked.js转换Markdown
-                document.getElementById('home').style.display = 'none'; // 隐藏主页内容
-                document.getElementById('article').style.display = 'block'; // 显示文章内容
-                document.getElementById('search-results').style.display = 'none'; // 隐藏搜索结果
+                document.getElementById('article-title').innerText = title;
+                document.getElementById('article-content').innerHTML = marked(content);
+                hljs.highlightAll(); // 高亮显示代码
+                document.getElementById('home').style.display = 'none';
+                document.getElementById('article').style.display = 'block';
+                document.getElementById('search-results').style.display = 'none';
             } else {
-                // 如果内容为空，显示主页
                 document.getElementById('home').style.display = 'block';
                 document.getElementById('article').style.display = 'none';
             }
         }
 
-        // 全局搜索功能
         const searchInput = document.getElementById('search');
         const searchResultsDiv = document.getElementById('search-results');
         const resultsList = document.getElementById('results-list');
@@ -255,51 +276,48 @@
             const query = this.value.toLowerCase();
             const links = document.querySelectorAll('#menu a');
 
-            resultsList.innerHTML = ''; // 清空搜索结果
+            resultsList.innerHTML = '';
 
-            let hasResults = false; // 追踪是否有搜索结果
+            let hasResults = false;
 
             links.forEach(link => {
                 const title = link.textContent.toLowerCase();
                 if (title.includes(query)) {
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `<a href="#" data-file="${link.dataset.file}" data-title="${link.dataset.title}">${link.textContent}</a>`;
-                    resultsList.appendChild(listItem); // 添加到结果列表
+                    resultsList.appendChild(listItem);
                     hasResults = true;
                 }
             });
 
-            // 根据搜索结果显示主页内容
             if (query === '') {
-                document.getElementById('home').style.display = 'block'; // 显示主页内容
-                searchResultsDiv.style.display = 'none'; // 隐藏搜索结果
-                document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+                document.getElementById('home').style.display = 'block';
+                searchResultsDiv.style.display = 'none';
+                document.getElementById('article').style.display = 'none';
             } else {
-                document.getElementById('home').style.display = 'none'; // 隐藏主页内容
-                searchResultsDiv.style.display = hasResults ? 'block' : 'none'; // 显示或隐藏搜索结果
-                document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+                document.getElementById('home').style.display = 'none';
+                searchResultsDiv.style.display = hasResults ? 'block' : 'none';
+                document.getElementById('article').style.display = 'none';
             }
         });
 
-        // 移动设备搜索框控制
         document.getElementById('search-btn').onclick = function() {
             const search = document.getElementById('search');
-            search.style.display = search.style.display === 'none' ? 'block' : 'none'; // 切换搜索框
-            search.style.marginLeft = '10px'; // 使搜索框出现在搜索图标的左边
+            search.style.display = search.style.display === 'none' ? 'block' : 'none';
+            search.style.marginLeft = '10px';
             if (search.style.display === 'block') {
-                search.focus(); // 聚焦到搜索框
+                search.focus();
             }
         };
 
-        // 处理搜索结果链接点击
         resultsList.addEventListener('click', function(e) {
             if (e.target.tagName === 'A') {
                 e.preventDefault();
                 const file = e.target.dataset.file;
                 const title = e.target.dataset.title;
-                loadArticle(file, title); // 加载对应文章
-                searchInput.value = ''; // 清空搜索框
-                searchResultsDiv.style.display = 'none'; // 隐藏搜索结果
+                loadArticle(file, title);
+                searchInput.value = '';
+                searchResultsDiv.style.display = 'none';
             }
         });
 
