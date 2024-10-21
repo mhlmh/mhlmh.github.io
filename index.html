@@ -78,6 +78,13 @@
             display: none; /* 默认隐藏文章内容 */
         }
 
+        #search {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 100%;
+            display: none; /* 默认隐藏搜索框 */
+        }
+
         .dark-theme {
             background-color: #333;
             color: #fff;
@@ -98,6 +105,14 @@
             font-size: 18px;
         }
 
+        #search-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 10px; /* 增加与搜索框的间距 */
+        }
+
         /* 大屏设备样式 */
         @media (min-width: 768px) {
             nav {
@@ -114,6 +129,15 @@
                 display: none; /* 隐藏菜单按钮 */
             }
 
+            #search {
+                display: block; /* 大屏设备上显示搜索框 */
+                margin: 0; /* 移除搜索框的底部边距 */
+            }
+
+            #search-btn {
+                display: inline; /* 大屏设备上显示搜索按钮 */
+            }
+
             .container {
                 flex-direction: row; /* 在大屏设备上水平排列 */
             }
@@ -123,7 +147,11 @@
 <body>
     <header>
         <button id="menu-toggle">☰</button>
-        <img src="m.svg" alt="Logo" class="logo">
+        <img src="m.svg" alt="Logo" class="logo" id="logo">
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="search" placeholder="搜索文章..." />
+            <button id="search-btn">🔍</button>
+        </div>
         <button id="theme-toggle">🌙</button>
     </header>
     <div class="container">
@@ -150,6 +178,8 @@
         const themeToggleButton = document.getElementById('theme-toggle');
         let darkMode = false;
 
+        const articles = {}; // 存储文章内容
+
         document.getElementById('menu-toggle').onclick = function() {
             const menu = document.getElementById('menu');
             menu.classList.toggle('show');
@@ -159,7 +189,26 @@
             darkMode = !darkMode;
             document.body.classList.toggle('dark-theme', darkMode);
             themeToggleButton.innerText = darkMode ? '☀️' : '🌙'; // 切换图标
+            
+            // 反转SVG颜色
+            const logo = document.getElementById('logo');
+            logo.style.filter = darkMode ? 'invert(1)' : 'none'; // 深色模式反转颜色
         };
+
+        // 预加载文章内容
+        function preloadArticles() {
+            const links = document.querySelectorAll('#menu a');
+            links.forEach(link => {
+                const file = link.dataset.file;
+                fetch(file)
+                    .then(response => response.text())
+                    .then(data => {
+                        articles[file] = data; // 存储文章内容
+                    });
+            });
+        }
+
+        preloadArticles(); // 预加载文章
 
         document.querySelectorAll('#menu a').forEach(link => {
             link.onclick = function(e) {
@@ -174,18 +223,49 @@
         });
 
         function loadArticle(file, title) {
-            fetch(file)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('article-title').innerText = title; // 使用自定义标题
-                    document.getElementById('article-content').innerHTML = marked(data); // 使用marked.js转换Markdown
-                    document.getElementById('home').style.display = 'none'; // 隐藏主页内容
-                    document.getElementById('article').style.display = 'block'; // 显示文章内容
-                })
-                .catch(error => {
-                    console.error('加载文章时出错:', error);
-                });
+            const content = articles[file];
+            if (content) {
+                document.getElementById('article-title').innerText = title; // 使用自定义标题
+                document.getElementById('article-content').innerHTML = marked(content); // 使用marked.js转换Markdown
+                document.getElementById('home').style.display = 'none'; // 隐藏主页内容
+                document.getElementById('article').style.display = 'block'; // 显示文章内容
+            } else {
+                // 如果内容为空，显示主页
+                document.getElementById('home').style.display = 'block';
+                document.getElementById('article').style.display = 'none';
+            }
         }
+
+        // 全局搜索功能
+        const searchInput = document.getElementById('search');
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const links = document.querySelectorAll('#menu a');
+
+            let hasResults = false; // 追踪是否有搜索结果
+
+            links.forEach(link => {
+                const title = link.textContent.toLowerCase();
+                if (title.includes(query)) {
+                    link.parentElement.style.display = 'block'; // 显示匹配的链接
+                    hasResults = true;
+                } else {
+                    link.parentElement.style.display = 'none'; // 隐藏不匹配的链接
+                }
+            });
+
+            // 根据搜索结果显示主页内容
+            document.getElementById('home').style.display = hasResults ? 'none' : 'block';
+            document.getElementById('article').style.display = 'none'; // 隐藏文章内容
+        });
+
+        // 移动设备搜索框控制
+        document.getElementById('search-btn').onclick = function() {
+            const search = document.getElementById('search');
+            search.style.display = search.style.display === 'none' ? 'block' : 'none'; // 切换搜索框
+            this.style.display = search.style.display === 'block' ? 'none' : 'inline'; // 隐藏或显示搜索按钮
+        };
+
     </script>
 </body>
 </html>
