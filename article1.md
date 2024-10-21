@@ -1,4 +1,4 @@
-## 本站支持的 Markdown 基本语法示例
+## 本站支持的 Markdown 语法示例
 >说明
 - 这是一个外部引用<code>Markdown</code>文件的示例，文件名为<code>article*.md</code>，它将直接被渲染到此<code>HTML</code>页面中。
 - 本页也支持<code>HTML</code>标签的渲染，你可将<code>HTML</code>代码键入到页面左侧，其将在页面右侧实时同步显示。
