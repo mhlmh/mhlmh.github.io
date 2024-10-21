@@ -1,338 +1,191 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MHLMH 博客</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" type="text/javascript"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js" id="MathJax-script" async type="text/javascript"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7fc;
-      color: #333;
-    }
-
-    .container {
-      display: flex;
-      height: 100vh;
-    }
-
-    /* 侧边导航栏 */
-    .sidebar {
-      background-color: #1f1f1f;
-      width: 250px;
-      padding: 20px;
-      color: white;
-      position: relative;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar.collapsed {
-      width: 80px;
-    }
-
-    .sidebar .logo {
-      text-align: center;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
-
-    .sidebar nav ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .sidebar nav ul li {
-      margin: 20px 0;
-    }
-
-    .sidebar nav ul li a {
-      text-decoration: none;
-      color: white;
-      font-size: 1.1em;
-      display: block;
-      padding: 10px;
-      transition: background 0.3s;
-      display: flex;
-      align-items: center;
-    }
-
-    .sidebar nav ul li a:hover {
-      background-color: #ff7b00;
-    }
-
-    /* 内容区 */
-    .content {
-      flex-grow: 1;
-      background-color: white;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .search-bar {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-
-    .search-bar input {
-      width: 300px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      position: absolute;
-      right: 0;
-      transition: right 0.3s;
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .search-bar .icon {
-      cursor: pointer;
-      font-size: 1.5em;
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-    }
-
-    /* 隐藏或显示内容的类 */
-    .hidden {
-      display: none;
-    }
-
-    .post {
-      margin-bottom: 20px;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-
-    .post h2 {
-      margin-bottom: 10px;
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        position: fixed;
-        left: -250px;
-        top: 0;
-        height: 100%;
-        z-index: 1000;
-        transition: all 0.3s ease;
-      }
-
-      .sidebar.active {
-        left: 0;
-      }
-
-      .hamburger {
-        display: block;
-        font-size: 1.5em;
-        cursor: pointer;
-      }
-
-      .search-bar input {
-        width: 200px;
-        right: -200px; /* 初始状态在视图外 */
-        visibility: hidden; /* 初始状态不可见 */
-      }
-
-      .close-icon {
-        display: none; /* 默认隐藏 */
-      }
-
-      .sidebar.active .close-icon {
-        display: block; /* 展开时显示 */
-      }
-    }
-
-    /* 隐藏汉堡菜单图标在桌面端 */
-    .hamburger {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .hamburger {
-        display: block;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <!-- 侧边导航栏 -->
-    <aside class="sidebar" id="sidebar">
-      <div class="logo">MHLMH 博客</div>
-      <div class="close-icon" id="closeIcon"></div>
-      <nav>
-        <ul>
-          <li><a href="#" data-target="home"><span class="icon">🏠</span> 首页</a></li>
-          <li>
-            <a href="#" data-target="blog-content"><span class="icon">📝</span> 博客文章</a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- 主内容区 -->
-    <main class="content">
-      <header>
-        <span class="hamburger" id="hamburger">☰</span>
-        <div class="user-menu">
-          <span><h1>MHLMH</h1></span>
-        </div>
-        <div class="search-bar">
-          <input type="text" id="search" placeholder="搜索文章...">
-          <span class="icon" id="searchIcon">🔍</span>
-        </div>
-      </header>
-<hr><br>
-<!-- 首页内容 -->
-<section class="home-content" id="home-content"> <!-- 移除 hidden 类 -->
-  <h2>欢迎来到 MHLMH 博客</h2>
-  <p>在这里，您可以阅读最新的博客文章和分享想法。</p>
-</section>
-
-<!-- 博客文章内容 -->
-<section class="blog-content hidden" id="blog-content">
-  <h2>博客文章</h2>
-  <div id="blog-posts"></div>
-</section>
-    </main>
-  </div>
-
-<script>
-  // 页面加载时显示首页内容
-  document.addEventListener('DOMContentLoaded', function() {
-    // 显示首页内容
-    document.getElementById('home-content').classList.remove('hidden');
-    // 隐藏博客内容
-    document.getElementById('blog-content').classList.add('hidden');
-  });
-
-  // 菜单点击后切换显示内容
-  document.querySelectorAll('.sidebar nav ul li a[data-target]').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-
-      // 隐藏所有内容区
-      document.querySelectorAll('.content section').forEach(function(section) {
-        section.classList.add('hidden');
-      });
-
-      // 根据链接显示内容
-      var target = this.getAttribute('data-target');
-      if (target === 'home') {
-        document.getElementById('home-content').classList.remove('hidden');
-      } else if (target === 'blog-content') {
-        document.getElementById('blog-content').classList.remove('hidden');
-        loadBlogPosts(); // 加载博客文章
-      }
-
-      // 收起侧边栏（移动设备）
-      var sidebar = document.getElementById('sidebar');
-      sidebar.classList.remove('active');
-      document.getElementById('hamburger').textContent = '☰';
-    });
-  });
-
-  // 加载博客文章
-  function loadBlogPosts() {
-    fetch('README.md')
-      .then(response => response.text())
-      .then(text => {
-        const postsContainer = document.getElementById('blog-posts');
-        const posts = text.split('---'); // 分隔文章
-        postsContainer.innerHTML = ''; // 清空内容
-
-        posts.forEach((post, index) => {
-          const postTitle = post.match(/# (.+)/); // 获取标题
-          if (postTitle) {
-            const title = postTitle[1].trim();
-            const titleElement = document.createElement('div');
-            titleElement.className = 'post-title';
-            titleElement.textContent = title;
-            titleElement.addEventListener('click', () => showPostContent(post, index));
-            postsContainer.appendChild(titleElement);
-          }
-        });
-      })
-      .catch(error => {
-        console.error('无法加载博客文章:', error);
-      });
-  }
-
-        // 函数用于渲染 Markdown 和 HTML
-        function renderContent(content) {
-            // 使用 marked.js 渲染 Markdown 为 HTML
-            preview.innerHTML = marked.parse(content);
-            // 使用 highlight.js 高亮代码块
-            hljs.highlightAll();
-            // 让 MathJax 渲染公式
-            MathJax.typeset();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客主页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-  // 显示博客文章内容
-  function showPostContent(post, index) {
-    const postContent = post.replace(/# .+/, '').trim(); // 去掉标题，保留正文
-    const postCard = document.createElement('div');
-    postCard.className = 'post-card';
-    postCard.innerHTML = marked(postContent); // 使用 marked.js 解析 Markdown
-    const postsContainer = document.getElementById('blog-posts');
-    postsContainer.appendChild(postCard);
-  }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f8f8; /* 可以更改为更漂亮的配色 */
+        }
 
-  // 菜单折叠与展开，并切换图标
-  document.getElementById('hamburger').addEventListener('click', function() {
-    var sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active');
-    this.textContent = this.textContent === '☰' ? '✖' : '☰';
-  });
+        .logo {
+            margin: 0 auto;
+            height: 40px; /* Logo高度 */
+        }
 
-  // 点击关闭图标折叠菜单
-  document.getElementById('closeIcon').addEventListener('click', function() {
-    var sidebar = document.getElementById('sidebar');
-    sidebar.classList.remove('active');
-    document.getElementById('hamburger').textContent = '☰';
-  });
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden; /* 隐藏溢出部分 */
+        }
 
-  // 点击搜索图标显示搜索框
-  document.getElementById('searchIcon').addEventListener('click', function() {
-    const searchInput = document.getElementById('search');
-    const isHidden = searchInput.style.right === '-200px';
-    searchInput.style.right = isHidden ? '0px' : '-200px';
-    searchInput.style.opacity = isHidden ? '1' : '0';
-    searchInput.style.visibility = isHidden ? 'visible' : 'hidden';
-  });
-</script>
+        nav {
+            background-color: #fff; /* 可以更改为更漂亮的配色 */
+            width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            display: none; /* 默认隐藏菜单 */
+            flex-shrink: 0; /* 防止缩小 */
+        }
+
+        nav.show {
+            display: block; /* 在移动设备上显示菜单 */
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            padding: 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        nav ul li a:hover {
+            background-color: #e0e0e0;
+        }
+
+        main {
+            padding: 20px;
+            flex: 1; /* 让内容区占满剩余空间 */
+            overflow-y: auto; /* 允许内容滚动 */
+        }
+
+        #home {
+            display: block; /* 默认显示主页 */
+        }
+
+        #article {
+            display: none; /* 默认隐藏文章内容 */
+        }
+
+        .dark-theme {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .dark-theme header {
+            background-color: #444;
+        }
+
+        .dark-theme nav {
+            background-color: #555;
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* 大屏设备样式 */
+        @media (min-width: 768px) {
+            nav {
+                display: block; /* 大屏设备上显示菜单 */
+                height: 100%; /* 菜单高度为100% */
+            }
+
+            main {
+                padding: 20px;
+                height: 100%; /* 文章内容高度为100% */
+            }
+
+            #menu-toggle {
+                display: none; /* 隐藏菜单按钮 */
+            }
+
+            .container {
+                flex-direction: row; /* 在大屏设备上水平排列 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button id="menu-toggle">☰</button>
+        <img src="m.svg" alt="Logo" class="logo">
+        <button id="theme-toggle">🌙</button>
+    </header>
+    <div class="container">
+        <nav id="menu">
+            <ul>
+                <li><a href="#" data-file="article1.md" data-title="自定义标题 1">文章 1</a></li>
+                <li><a href="#" data-file="article2.md" data-title="自定义标题 2">文章 2</a></li>
+                <!-- 更多文章链接 -->
+            </ul>
+        </nav>
+        <main id="content">
+            <div id="home">
+                <h1>欢迎来到我的博客</h1>
+                <p>这里是主页内容...</p>
+            </div>
+            <div id="article">
+                <h2 id="article-title"></h2>
+                <div id="article-content"></div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+    <script>
+        const themeToggleButton = document.getElementById('theme-toggle');
+        let darkMode = false;
+
+        document.getElementById('menu-toggle').onclick = function() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('show');
+        };
+
+        themeToggleButton.onclick = function() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-theme', darkMode);
+            themeToggleButton.innerText = darkMode ? '☀️' : '🌙'; // 切换图标
+        };
+
+        document.querySelectorAll('#menu a').forEach(link => {
+            link.onclick = function(e) {
+                e.preventDefault();
+                const file = this.dataset.file;
+                const title = this.dataset.title; // 获取自定义标题
+                loadArticle(file, title); // 传递标题
+                if (window.innerWidth < 768) { // 移动设备
+                    document.getElementById('menu').classList.remove('show');
+                }
+            };
+        });
+
+        function loadArticle(file, title) {
+            fetch(file)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('article-title').innerText = title; // 使用自定义标题
+                    document.getElementById('article-content').innerHTML = marked(data); // 使用marked.js转换Markdown
+                    document.getElementById('home').style.display = 'none'; // 隐藏主页内容
+                    document.getElementById('article').style.display = 'block'; // 显示文章内容
+                })
+                .catch(error => {
+                    console.error('加载文章时出错:', error);
+                });
+        }
+    </script>
 </body>
 </html>
