@@ -1,326 +1,424 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHLMH 博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css">
+    <title>LVMH 服务器</title>
+   <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        .placeholder-content {
+            display: none;
+        }
+
+     .callout {
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid transparent;
+            border-left-width: 5px;
+            border-radius: 0.25rem;
             display: flex;
-            flex-direction: column;
-            height: 100vh;
         }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #f8f8f8;
-            border-bottom: 1px solid #ddd;
+        .callout-icon {
+            font-size: 1rem;
+            margin-right: 1rem;
         }
-
-        .logo {
-            margin: 0 auto;
-            height: 40px;
+        .callout-info {
+            color: #084298;
+            background-color: #cfe2ff;
+            border-left-color: #084298;
         }
-
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
+        .callout-warning {
+            color: #664d03;
+            background-color: #fff3cd;
+            border-left-color: #664d03;
         }
-
-        nav {
-            background-color: #fff;
-            width: 200px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            display: none;
-            flex-shrink: 0;
+        .callout-danger {
+            color: #842029;
+            background-color: #f8d7da;
+            border-left-color: #842029;
         }
-
-        nav.show {
-            display: block;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            padding: 10px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #333;
-        }
-
-        nav ul li a:hover {
-            background-color: #e0e0e0;
-        }
-
-        main {
-            padding: 20px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        #home {
-            display: block;
-        }
-
-        #article {
-            display: none;
-        }
-
-        #search {
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            display: none;
-        }
-
-        .search-results {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .dark-theme {
-            background-color: #333;
-            color: #fff;
-        }
-
-        .dark-theme header {
-            background-color: #444;
-        }
-
-        .dark-theme nav {
-            background-color: #555;
-        }
-
-        #theme-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        #search-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            margin-left: 10px;
-        }
-
-        /* 自定义样式以确保 github-markdown 样式正常工作 */
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 0;
-            padding: 45px;
-            max-width: 100%;
-            background-color: #fff;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-
-        /* 让代码高亮正常工作 */
-        pre {
-            background-color: #f6f8fa;
-            padding: 10px;
-            overflow: auto;
-            border-radius: 3px;
-        }
-
-        /* 针对大屏幕的媒体查询 */
-        @media (min-width: 768px) {
-            nav {
-                display: block;
-                height: 100%;
-            }
-
-            main {
-                padding: 20px;
-                height: 100%;
-            }
-
-            #menu-toggle {
-                display: none;
-            }
-
-            #search {
-                display: block;
-                margin: 0;
-            }
-
-            #search-btn {
-                display: inline;
-            }
-
-            .container {
-                flex-direction: row;
-            }
+        .callout-tips {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-left-color: #0f5132;
         }
     </style>
 </head>
 <body>
-    <header>
-        <button id="menu-toggle">☰</button>
-        <img src="https://github.com/user-attachments/assets/2a9b119a-2eb8-4ac3-859c-c86d86dec4f2" alt="Logo" class="logo" id="logo">
-        <div style="display: flex; align-items: center;">
-            <input type="text" id="search" placeholder="搜索文章..." />
-            <button id="search-btn">🔍</button>
-        </div>
-        <button id="theme-toggle">🌙</button>
-    </header>
-    <div class="container">
-        <nav id="menu">
-            <ul>
-                <li><a href="#" data-file="article1.md" data-title="本站支持的 Markdown 语法示例">Markdown 说明</a></li>
-                <li><a href="#" data-file="article2.md" data-title="自定义标题 2">文章 2</a></li>
-                <!-- 更多文章链接 -->
+    <!-- Navbar -->
+    <div class="sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">LVMH 服务器</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/">主页</a></li>
+                <li class="nav-item"><a class="nav-link" href="">博客</a></li>
+                <li class="nav-item"><a class="nav-link" href="">bootstrap 样式</a></li>
             </ul>
-        </nav>
-        <main id="content">
-            <div id="home">
-                <h1>欢迎来到我的博客</h1>
-                <p>这里是主页内容...</p>
+        </div>
+    </nav>
+   </div>
+
+    <!-- Nav Tabs -->
+    <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab">主页</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">博客</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">Bootstrap 样式</button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <main class="container my-5">
+                <h1 class="display-4">LVMH 服务器</h1>
+                <p class="lead">节点：中国香港 [HK, CN]</p>
+                <p>● 测试速度：<a href="100mb.bin">点此下载</a> 100MB 测试文件</p>
+                <p>● 浏览资源：<a href="https://lvmhmh.eu.org">点此查阅</a> 本站资源存储目录 （某些目录可能加密，请先获取访问权限）</p>
+                <p>● 激活软件（Windows）：</p>
+                   <p style="text-indent: 2ch;">○ 激活 IDM 下载工具，请复制以下命令：<br>
+<code>iex(irm is.gd/idm_reset)</code><br>
+粘贴到 Powershell 中（个人激活试用限制期限，原帖可参阅 Github 项目，请支持正版软件）；</p>
+                   <p style="text-indent: 2ch;">○ 激活 Windows 系统，请 <a href="">点此下载</a> HEU KMS Activator（仅供个人研究激活原理试用）</p>
+                <p>● DD 重装系统：请 <a href="">点此跳转</a> 详阅安装前须知</p>
+<br>
+<h3>更多服务器工具和功能正在测试中，后续视测试情况陆续上线，敬请关注。</h3>
+
+            </main>
+        </div>
+
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="container my-5">
+                <h2>博客</h2>
+                <p>此处为 LVMH 的博客内容。</p><hr>
             </div>
-            <div id="article">
-                <h2 id="article-title"></h2>
-                <div id="article-content" class="markdown-body"></div>
-            </div>
-            <div class="search-results" id="search-results">
-                <h3>搜索结果</h3>
-                <ul id="results-list"></ul>
-            </div>
-        </main>
+        </div>
+        
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <div class="container my-5">
+                <h2>Bootstrap 样式</h2>
+                <p>此处显示 Bootstrap 样式的预览。</p><hr>
+                <h3>环状旋转器</h3>
+                <div class="spinner-border" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div><hr>
+
+                <h3>正在加载</h3>
+                <div class="d-flex align-items-center">
+  <strong>正在加载...</strong>
+  <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+</div><hr>
+
+
+
+                <h3>卡片</h3>
+                <div class="card" style="width: 12rem;">
+  <img src="m.svg" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">LOGO</h5>
+    <p class="card-text">Logo</p>
+    <a href="" class="btn btn-primary">Logo</a>
+  </div>
+</div><hr>
+
+                <!-- Form with Password Toggle -->
+                <h3 class="mt-4">表单控件</h3>
+                <form>
+                    <div class="mb-3">
+                        <label for="emailInput" class="form-label">电子邮件</label>
+                        <input type="email" class="form-control" id="emailInput">
+                    </div>
+                    <div class="mb-3 position-relative">
+                        <label for="passwordInput" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="passwordInput">
+                        <button type="button" class="btn btn-outline-secondary position-absolute end-0 top-0" onclick="togglePassword()" style="margin: 8px;">显示密码</button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dateInput" class="form-label">日期</label>
+                        <input type="date" class="form-control" id="dateInput">
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </form><hr>
+
+                <h3>折叠内容</h3>
+                <p>隐藏已展开内容</p>
+                <div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Accordion Item #2
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        Accordion Item #3
+      </button>
+    </h2>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+                <p>不隐藏已展开内容</p>
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+        Accordion Item #2
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+      <div class="accordion-body">
+        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+        Accordion Item #3
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+      <div class="accordion-body">
+        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+</div><hr>
+
+                <!-- Dynamic Progress Bar with Slider -->
+                <h3>动态进度条与滑块</h3>
+                <input type="range" class="form-range mb-3" id="progressSlider" min="0" max="100" value="25" oninput="updateProgressBar(this.value)">
+                <div class="progress mb-3">
+                    <div class="progress-bar" id="dynamicProgressBar" role="progressbar" style="width: 25%;">25%</div>
+                </div>
+
+                <!-- JavaScript for updating progress bar -->
+                <script>
+                    function updateProgressBar(value) {
+                        const progressBar = document.getElementById("dynamicProgressBar");
+                        progressBar.style.width = value + "%";
+                        progressBar.textContent = value + "%";
+                    }
+                </script><hr>
+
+                <!-- Placeholder with 5s delay -->
+                <h3 class="mt-4">占位符</h3>
+                <div id="placeholder" class="placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-8"></span>
+                </div>
+                <div id="placeholderContent" class="placeholder-content">
+                    <p>这是 Bootstrap 样式示例，此处为占位符区域，您能看到此处内容表示已加载完成。</p>
+                </div><hr>
+
+                <!-- Example Table -->
+                <h3 class="mt-4">示例表格</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">序号</th>
+                            <th scope="col">名称</th>
+                            <th scope="col">年龄</th>
+                            <th scope="col">职位</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>张三</td>
+                            <td>28</td>
+                            <td>软件工程师</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>李四</td>
+                            <td>34</td>
+                            <td>产品经理</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>王五</td>
+                            <td>30</td>
+                            <td>设计师</td>
+                        </tr>
+                    </tbody>
+                </table><hr>
+
+                <h3>警示提示框</h3>
+                <div class="alert alert-primary" role="alert">
+  A simple primary alert—check it out!
+</div>
+<div class="alert alert-secondary" role="alert">
+  A simple secondary alert—check it out!
+</div>
+<div class="alert alert-success" role="alert">
+  A simple success alert—check it out!
+</div>
+<div class="alert alert-danger" role="alert">
+  A simple danger alert—check it out!
+</div>
+<div class="alert alert-warning" role="alert">
+  A simple warning alert—check it out!
+</div>
+<div class="alert alert-info" role="alert">
+  A simple info alert—check it out!
+</div>
+<div class="alert alert-light" role="alert">
+  A simple light alert—check it out!
+</div>
+<div class="alert alert-dark" role="alert">
+  A simple dark alert—check it out!
+</div><hr>
+
+                <h3>带图标的备注块</h3>
+                <!-- Information Callout -->
+        <div class="callout callout-info">
+            <i class="bi bi-info-circle-fill callout-icon"></i>
+            <div>
+                <strong>信息</strong>
+                <p>这是一个信息型 Callout 组件，通常用于提供一般性提示或说明。</p>
+            </div>
+        </div>
+
+        <!-- Warning Callout -->
+        <div class="callout callout-warning">
+            <i class="bi bi-exclamation-circle-fill callout-icon"></i>
+            <div>
+                <strong>重要</strong>
+                <p>这是一个重要型 Callout 组件，用于强调需要注意的内容。</p>
+            </div>
+        </div>
+
+        <!-- Danger Callout -->
+        <div class="callout callout-danger">
+            <i class="bi bi-exclamation-triangle-fill callout-icon"></i>
+            <div>
+                <strong>警告</strong>
+                <p>这是一个警告型 Callout 组件，通常用于提示用户某个操作可能会导致问题或出现错误。</p>
+            </div>
+        </div>
+
+        <!-- tips Callout as Tips -->
+        <div class="callout callout-tips">
+            <i class="bi bi-lightbulb-fill callout-icon"></i>
+            <div>
+                <strong>提示</strong>
+                <p>这是一个提示型 Callout 组件，通常用于提供一些有用的建议或技巧。</p>
+            </div>
+        </div>
+<hr>
+
+                <h3>圆角矩形式徽章</h3>
+                <span class="badge text-bg-primary">Primary</span>
+<span class="badge text-bg-secondary">Secondary</span>
+<span class="badge text-bg-success">Success</span>
+<span class="badge text-bg-danger">Danger</span>
+<span class="badge text-bg-warning">Warning</span>
+<span class="badge text-bg-info">Info</span>
+<span class="badge text-bg-light">Light</span>
+<span class="badge text-bg-dark">Dark</span>
+<hr>
+
+                <!-- Modal -->
+                <h3 class="mt-4">模态框</h3>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    打开模态框
+                </button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">模态框标题</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                            </div>
+                            <div class="modal-body">
+                                这是模态框内容。
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">保存更改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="sticky-bottom">
+      <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2023-2024 lvmh.eu.org</p>
+  </footer>
+</div>
+
     <script>
-        const themeToggleButton = document.getElementById('theme-toggle');
-        let darkMode = false;
-
-        const articles = {};
-
-        document.getElementById('menu-toggle').onclick = function() {
-            const menu = document.getElementById('menu');
-            menu.classList.toggle('show');
-        };
-
-        themeToggleButton.onclick = function() {
-            darkMode = !darkMode;
-            document.body.classList.toggle('dark-theme', darkMode);
-            themeToggleButton.innerText = darkMode ? '☀️' : '🌙';
-
-            const logo = document.getElementById('logo');
-            logo.style.filter = darkMode ? 'invert(1)' : 'none';
-        };
-
-        function preloadArticles() {
-            const links = document.querySelectorAll('#menu a');
-            links.forEach(link => {
-                const file = link.dataset.file;
-                fetch(file)
-                    .then(response => response.text())
-                    .then(data => {
-                        articles[file] = data;
-                    });
-            });
-        }
-
-        preloadArticles();
-
-        document.querySelectorAll('#menu a').forEach(link => {
-            link.onclick = function(e) {
-                e.preventDefault();
-                const file = this.dataset.file;
-                const title = this.dataset.title;
-                loadArticle(file, title);
-                if (window.innerWidth < 768) {
-                    document.getElementById('menu').classList.remove('show');
-                }
-            };
-        });
-
-        function loadArticle(file, title) {
-            const content = articles[file];
-            if (content) {
-                document.getElementById('article-title').innerText = title;
-                document.getElementById('article-content').innerHTML = marked(content);
-                hljs.highlightAll(); // 高亮显示代码
-                document.getElementById('home').style.display = 'none';
-                document.getElementById('article').style.display = 'block';
-                document.getElementById('search-results').style.display = 'none';
+        // 密码显示/隐藏功能
+        function togglePassword() {
+            const passwordInput = document.getElementById("passwordInput");
+            const button = document.querySelector("button[onclick='togglePassword()']");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                button.textContent = "隐藏密码";
             } else {
-                document.getElementById('home').style.display = 'block';
-                document.getElementById('article').style.display = 'none';
+                passwordInput.type = "password";
+                button.textContent = "显示密码";
             }
         }
 
-        const searchInput = document.getElementById('search');
-        const searchResultsDiv = document.getElementById('search-results');
-        const resultsList = document.getElementById('results-list');
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const links = document.querySelectorAll('#menu a');
-
-            resultsList.innerHTML = '';
-
-            let hasResults = false;
-
-            links.forEach(link => {
-                const title = link.textContent.toLowerCase();
-                if (title.includes(query)) {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="#" data-file="${link.dataset.file}" data-title="${link.dataset.title}">${link.textContent}</a>`;
-                    resultsList.appendChild(listItem);
-                    hasResults = true;
-                }
-            });
-
-            if (query === '') {
-                document.getElementById('home').style.display = 'block';
-                searchResultsDiv.style.display = 'none';
-                document.getElementById('article').style.display = 'none';
-            } else {
-                document.getElementById('home').style.display = 'none';
-                searchResultsDiv.style.display = hasResults ? 'block' : 'none';
-                document.getElementById('article').style.display = 'none';
-            }
-        });
-
-        document.getElementById('search-btn').onclick = function() {
-            const search = document.getElementById('search');
-            search.style.display = search.style.display === 'none' ? 'block' : 'none';
-            search.style.marginLeft = '10px';
-            if (search.style.display === 'block') {
-                search.focus();
-            }
-        };
-
-        resultsList.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') {
-                e.preventDefault();
-                const file = e.target.dataset.file;
-                const title = e.target.dataset.title;
-                loadArticle(file, title);
-                searchInput.value = '';
-                searchResultsDiv.style.display = 'none';
-            }
-        });
-
+        // 5秒后替换占位符内容
+        setTimeout(() => {
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('placeholderContent').style.display = 'block';
+        }, 5000);
     </script>
+
 </body>
 </html>
